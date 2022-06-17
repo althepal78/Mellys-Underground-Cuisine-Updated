@@ -1,0 +1,51 @@
+﻿@model Mellys_Underground_Cuisine.Models.ViewModels.AddIngredientVM
+
+<div class="container-fluid m-0 p-0">
+    <div class="row justify-content-center m-0 p-0">
+        <div class="col-12 col-lg-12">
+            <form asp-action="AddIngredient" asp-controller="Admin" asp-route-id="@Model.ID"  method="post">
+
+                <div asp-validation-summary="All"></div>
+
+                <input type="hidden" asp-for="DishId" name="DishId" value="@Model.DishId" />
+                <label asp-for="Name" class="form-label">Press enter after each ingredient to add to list</label>
+                <input asp-for="Name" class="form-control" />
+            </form>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div id="ingredientList" class="d-xl-flex">
+                @if (Model.Ingredient != null)
+                {
+                    @foreach (var ing in Model.Ingredient)
+                    {
+                        <h4>
+                            <span class="badge bg-black text-secondary mt-2 mx-1">
+                                @ing.Name <span class="badge bg-black text-secondary">
+                                    <a class="text-white" asp-action="DeleteIngredient"
+                                                          asp-controller="Admin"
+                                                          asp-route-dishID="@Model.DishId"
+                                                          asp-route-ingID="@ing.ID">X</a>
+                                </span>
+                            </span>
+                        </h4>
+                    }
+                }
+                else
+                {
+                    <p>nope nada</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="/css/Register.css" rel="stylesheet" type="text/css" />
+}
+
+    @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        
+    }
+ }

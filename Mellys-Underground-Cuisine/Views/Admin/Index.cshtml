@@ -1,0 +1,77 @@
+﻿@using DAL.Entities
+@model List<Dish>
+
+<div class="container-fluid m-0 p-0">
+    <div class="row justify-content-center m-0 p-0">
+        <div class="col-12 col-lg-12">
+            <table class="table bg-black table-dark table-hover text-light border-5 border-secondary mt-2">
+                <thead class="">
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Ingredients</th>
+                        <th>Dish Information</th>
+                        <th>Dish Price</th>
+                        <th>Quantities Left</th>
+                        <th>Add Ingredients</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><img src="@item.FilePath" class="img-thumbnail" /></td>
+                                <td>@item.Name</td>
+                                @if (item.DishIngredient != null)
+                                {
+                                    <td>
+                                        @foreach (var ing in item.DishIngredient)
+                                        {
+                                            <h4>
+                                                <span class="badge bg-black text-secondary">
+                                                    @ing.Ingredients.Name <span class="badge bg-black text-secondary">
+                                                        <a class="text-white" asp-action="DeleteIngredient"
+                                                                               asp-controller="Admin"
+                                                                               asp-route-dishID="@item.Id"
+                                                                               asp-route-ingID="@ing.IngredientsId">X</a>
+                                                    </span>
+                                                </span>
+                                            </h4>
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>No Ingredients yet</td>
+                                }
+                                <td>@item.Information</td>
+                                <td>$ @item.Price.ToString("0.00") </td>
+                                <td>@item.Quantity</td>
+                                <td>
+
+                                    <a asp-controller="Admin" asp-action="AddIngredient" asp-route-id="@item.Id">Add Ingredients</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>Nada</td>
+                            <td>Nada</td>
+                            <td>Nada</td>
+                            <td>Nada</td>
+                            <td>Nada</td>
+                            <td>Nada</td>
+                            <td>Nada</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+

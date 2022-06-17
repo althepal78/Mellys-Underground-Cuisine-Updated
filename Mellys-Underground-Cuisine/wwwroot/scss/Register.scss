@@ -1,0 +1,76 @@
+﻿*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+}
+form {
+    padding: .4rem;
+    border: 3px ridge #ff9ff6;
+
+    label {
+        font-size: larger;
+        font-weight: 700;
+    }
+
+    input {
+        background-color: black;
+        color: #ff9ff6;
+        font-size: large;
+    }
+
+    .val {
+        background-color: #000;
+        color: #ff9ff6;
+    }
+}
+.gradient-custom-3 {
+    /* fallback for old browsers */
+    background: #84fab0;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5))
+}
+
+.gradient-custom-4 {
+    /* fallback for old browsers */
+    background: #84fab0;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1))
+}
+
+
+#ingredientList {
+    padding-left: 0;
+    list-style: none !important;
+}
+
+.ingredientInputItem {
+    display: inline;
+    margin-top: 15px;
+}
+
+#ingredientInput {
+    min-height: calc(1.5em + 1rem + 2px) !important;
+    padding: 0.5rem 1rem;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    margin-top: 15px;
+    color: black;
+}
+
+.ingredientPills {
+    background-color: black;
+    color: #ff9ff6;
+    font-size: 1.3em;
+    margin-right: 10px;
+}

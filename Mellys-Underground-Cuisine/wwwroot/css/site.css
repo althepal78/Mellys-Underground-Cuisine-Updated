@@ -1,0 +1,48 @@
+﻿*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.logo {
+  max-width: 150px;
+  margin-left: 5rem;
+}
+
+.theContainer {
+  min-width: 100vw !important;
+  width: 100vw !important;
+  min-height: 100vh;
+}
+
+.carousel {
+  margin: 0.5rem;
+}
+.carousel .carousel-inner {
+  width: 100%;
+}
+.carousel .carousel-inner img {
+  display: block;
+  width: 80%;
+  margin: auto;
+}
+.carousel .carousel-control-prev-icon, .carousel .carousel-control-next-icon {
+  filter: invert(100%);
+}
+.carousel .carousel-indicators, .carousel .carousel-caption {
+  background-color: rgba(0, 0, 0, 0.3);
+}
