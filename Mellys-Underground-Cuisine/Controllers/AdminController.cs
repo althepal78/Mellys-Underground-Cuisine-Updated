@@ -92,7 +92,7 @@ namespace Mellys_Underground_Cuisine.Controllers
 
         public IActionResult AddIngredient(Guid id)
         {
-            Console.WriteLine("Adding the Ingredient Get View Dish ID: " + id);
+            
             var dishIngredients = _db._dishIngredients.Where(x => x.DishId == id).Include(ing => ing.Ingredients).Select(x => x.Ingredients).ToList();
 
             AddIngredientVM vm = new AddIngredientVM
@@ -104,33 +104,66 @@ namespace Mellys_Underground_Cuisine.Controllers
             return View(vm);
         }
 
+        void AddToIngredients() { 
+            
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> AddIngredient(AddIngredientVM vm)
         {
-            var trimName = vm.Name.Trim();
+            Ingredient ingredient = new();
+
+
+            var trimName = vm.Name.Replace(",", "").Trim();
             var normalizeTrimName = trimName.ToUpper();
-            var exists = await  _db.Ingredients.FirstOrDefaultAsync(ing => ing.NormalizeName == normalizeTrimName);
-
+            var exists = await _db.Ingredients.FirstOrDefaultAsync(ing => ing.NormalizeName == normalizeTrimName);
+                       
             if (exists is null)
-            {
-                Ingredient ingredient = new Ingredient()
-                {
-                    Name = trimName,
-                    NormalizeName = normalizeTrimName,
-                };
-
+            {                
+                ingredient.Name = trimName;
+                ingredient.NormalizeName = normalizeTrimName;
                 await _db.Ingredients.AddAsync(ingredient);
                 await _db.SaveChangesAsync();
-
-                Console.WriteLine("shit don't exist but we created one :) ");
+                Console.WriteLine("ingredient ID: " + ingredient.ID);
             }
             else
             {
-                Console.WriteLine(exists + " ****************************");
+                
+                ingredient.ID = exists.ID;
             }
 
-            return RedirectToAction("Index");
+           
+            if (ingredient.ID == Guid.Empty)
+            {
+                ModelState.AddModelError("EmptyID", "Unable to save the igredient to the db");
+                return View(vm);
+            }
+
+
+
+            var ingInDish = _db._dishIngredients.FirstOrDefaultAsync(dishId => dishId.DishId == vm.DishId && dishId.IngredientsId == ingredient.ID);
+
+            if(ingInDish != null)
+            {
+                ModelState.AddModelError("InDishIngre", "Already In Dish");
+
+                return View(vm);
+            }
+          
+                DishIngredient dishIngredient = new()
+                {
+                    DishId = vm.DishId,
+                    IngredientsId = ingredient.ID,
+                };
+
+                await _db._dishIngredients.AddAsync(dishIngredient);
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("AddIngredient");
+            
+
         }
 
 

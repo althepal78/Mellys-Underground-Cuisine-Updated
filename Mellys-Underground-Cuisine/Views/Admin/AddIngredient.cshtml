@@ -1,14 +1,15 @@
-﻿@model Mellys_Underground_Cuisine.Models.ViewModels.AddIngredientVM
+﻿@using Mellys_Underground_Cuisine.Models.ViewModels
+@model AddIngredientVM
 
 <div class="container-fluid m-0 p-0">
     <div class="row justify-content-center m-0 p-0">
         <div class="col-12 col-lg-12">
             <form asp-action="AddIngredient" asp-controller="Admin" asp-route-id="@Model.ID"  method="post">
 
-                <div asp-validation-summary="All"></div>
+                <div class="bg-black text-secondary text-lg-start" asp-validation-summary="All"></div>
 
-                <input type="hidden" asp-for="DishId" name="DishId" value="@Model.DishId" />
-                <label asp-for="Name" class="form-label">Press enter after each ingredient to add to list</label>
+                <input type="hidden" asp-route-id="@Model.DishId" name="DishId" value="@Model.DishId" />
+                <label asp-for="Name" class="form-label text-info">Press enter after each ingredient to add to list</label>
                 <input asp-for="Name" class="form-control" />
             </form>
         </div>
