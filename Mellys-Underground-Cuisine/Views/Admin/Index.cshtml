@@ -17,6 +17,7 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     @if (Model != null)
                     {
                         @foreach (var item in Model)
@@ -29,16 +30,16 @@
                                     <td>
                                         @foreach (var ing in item.DishIngredient)
                                         {
-                                            <h4>
-                                                <span class="badge bg-black text-secondary">
-                                                    @ing.Ingredients.Name <span class="badge bg-black text-secondary">
+                                            
+                                                <span class="badge bg-black small text-secondary m-1">
+                                                    @ing.Ingredients.Name <span class="badge bg-black small text-secondary">
                                                         <a class="text-white" asp-action="DeleteIngredient"
                                                                                asp-controller="Admin"
                                                                                asp-route-dishID="@item.Id"
                                                                                asp-route-ingID="@ing.IngredientsId">X</a>
                                                     </span>
                                                 </span>
-                                            </h4>
+                                          
                                         }
                                     </td>
                                 }
@@ -47,11 +48,13 @@
                                     <td>No Ingredients yet</td>
                                 }
                                 <td>@item.Information</td>
-                                <td>$ @item.Price.ToString("0.00") </td>
+                                <td>$ @item.Price </td>
                                 <td>@item.Quantity</td>
                                 <td>
 
-                                    <a asp-controller="Admin" asp-action="AddIngredient" asp-route-id="@item.Id">Add Ingredients</a>
+                                    <a class="text-success" asp-controller="Admin" asp-action="AddIngredient" asp-route-id="@item.Id">Add Ingredients</a><br />
+                                    <a class="text-info bg-black" asp-controller="Admin" asp-action="EditDish" asp-route-id="@item.Id">Edit Dish</a><br />
+                                    <a class="text-danger bg-black" asp-controller="Admin" asp-action="DeleteDish" asp-route-id="@item.Id">Delete Dish</a>
                                 </td>
                             </tr>
                         }

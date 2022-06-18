@@ -8,7 +8,7 @@
 
                 <div class="bg-black text-secondary text-lg-start" asp-validation-summary="All"></div>
 
-                <input type="hidden" asp-route-id="@Model.DishId" name="DishId" value="@Model.DishId" />
+                <input type="hidden" asp-for="@Model.DishId" name="DishId" value="@Model.DishId" />
                 <label asp-for="Name" class="form-label text-info">Press enter after each ingredient to add to list</label>
                 <input asp-for="Name" class="form-control" />
             </form>
@@ -19,16 +19,18 @@
                 {
                     @foreach (var ing in Model.Ingredient)
                     {
-                        <h4>
-                            <span class="badge bg-black text-secondary mt-2 mx-1">
-                                @ing.Name <span class="badge bg-black text-secondary">
-                                    <a class="text-white" asp-action="DeleteIngredient"
-                                                          asp-controller="Admin"
+                        
+                            <h4>
+                                <span class="badge bg-black text-secondary mt-2 mx-1">
+                                    @ing.Name <span class="badge bg-black text-secondary">
+                                        <a class="text-white"
+                                                          asp-action="DeleteIngredient"
                                                           asp-route-dishID="@Model.DishId"
                                                           asp-route-ingID="@ing.ID">X</a>
+                                    </span>
                                 </span>
-                            </span>
-                        </h4>
+                            </h4>
+                        
                     }
                 }
                 else

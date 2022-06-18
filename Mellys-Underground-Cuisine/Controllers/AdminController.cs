@@ -90,23 +90,21 @@ namespace Mellys_Underground_Cuisine.Controllers
         }
 
 
+
+        // this is the get needs a ID 
+        [HttpGet]
         public IActionResult AddIngredient(Guid id)
         {
-            
+
             var dishIngredients = _db._dishIngredients.Where(x => x.DishId == id).Include(ing => ing.Ingredients).Select(x => x.Ingredients).ToList();
 
-            AddIngredientVM vm = new AddIngredientVM
+            AddIngredientVM addIngredient = new AddIngredientVM
             {
                 DishId = id,
                 Ingredient = dishIngredients
             };
 
-            return View(vm);
-        }
-
-        void AddToIngredients() { 
-            
-
+            return View(addIngredient);
         }
 
 
@@ -119,22 +117,20 @@ namespace Mellys_Underground_Cuisine.Controllers
             var trimName = vm.Name.Replace(",", "").Trim();
             var normalizeTrimName = trimName.ToUpper();
             var exists = await _db.Ingredients.FirstOrDefaultAsync(ing => ing.NormalizeName == normalizeTrimName);
-                       
+
             if (exists is null)
-            {                
+            {
                 ingredient.Name = trimName;
                 ingredient.NormalizeName = normalizeTrimName;
                 await _db.Ingredients.AddAsync(ingredient);
                 await _db.SaveChangesAsync();
-                Console.WriteLine("ingredient ID: " + ingredient.ID);
             }
             else
             {
-                
                 ingredient.ID = exists.ID;
             }
 
-           
+
             if (ingredient.ID == Guid.Empty)
             {
                 ModelState.AddModelError("EmptyID", "Unable to save the igredient to the db");
@@ -143,46 +139,48 @@ namespace Mellys_Underground_Cuisine.Controllers
 
 
 
-            var ingInDish = _db._dishIngredients.FirstOrDefaultAsync(dishId => dishId.DishId == vm.DishId && dishId.IngredientsId == ingredient.ID);
+            var ingInDish = await _db._dishIngredients.Where(dishId => dishId.DishId == vm.DishId).FirstOrDefaultAsync(ing => ing.IngredientsId == ingredient.ID);
 
-            if(ingInDish != null)
+
+            if (ingInDish != null)
             {
                 ModelState.AddModelError("InDishIngre", "Already In Dish");
 
                 return View(vm);
             }
-          
-                DishIngredient dishIngredient = new()
-                {
-                    DishId = vm.DishId,
-                    IngredientsId = ingredient.ID,
-                };
 
-                await _db._dishIngredients.AddAsync(dishIngredient);
-                await _db.SaveChangesAsync();
+            DishIngredient dishIngredient = new()
+            {
+                DishId = vm.DishId,
+                IngredientsId = ingredient.ID,
+            };
 
-                return RedirectToAction("AddIngredient");
-            
+
+            await _db._dishIngredients.AddAsync(dishIngredient);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(AddIngredient), new { id = vm.DishId });
+
 
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> DeleteIngredient(Guid dishID, Guid IngID)
+        [HttpGet]
+        public async Task<IActionResult> DeleteIngredient(Guid dishID, Guid ingID)
         {
             var ingredientsInDish = _db._dishIngredients.Where(gu => gu.DishId == dishID).Include(ingd => ingd.Ingredients).ToList();
 
 
             if (ingredientsInDish is null)
             {
-                Console.WriteLine("dish is null");
+                Console.WriteLine("dish is null**********************************************************************************************");
             }
             else
             {
 
                 foreach (var ingd in ingredientsInDish)
                 {
-                    if (ingd.IngredientsId == IngID)
+                    if (ingd.IngredientsId == ingID)
                     {
                         _db._dishIngredients.Remove(ingd);
                         await _db.SaveChangesAsync();
@@ -191,7 +189,7 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             }
 
-            return RedirectToAction("AddIngredient", new { id = dishID.ToString() });
+            return RedirectToAction(nameof(AddIngredient), new { id = dishID });
         }
 
 
@@ -200,6 +198,22 @@ namespace Mellys_Underground_Cuisine.Controllers
             return View();
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteDish(Guid id)
+        {
+            var deleteDish = await _db.Dishes.Include(dish => dish.DishIngredient).Where(di => di.Id == id).FirstOrDefaultAsync();
+            if (deleteDish is null)
+            {
+                ModelState.AddModelError("NotHere", "Dish is already Deleted");
+                return RedirectToAction(nameof(Index));
+            }
+            _db.Dishes.Remove(deleteDish);
+            _db.SaveChanges();
+
+
+            return RedirectToAction(nameof(Index));
+        }
 
     }
 
