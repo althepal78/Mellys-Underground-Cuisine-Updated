@@ -54,11 +54,13 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return View(dishVM);
             }
 
-
-            if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
+            if (dishVM.FoodImage != null)
             {
-                ModelState.AddModelError("File Type Error", "You're only allowed png, jpeg, or svg type files");
-                return View(dishVM);
+                if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
+                {
+                    ModelState.AddModelError("File Type Error", "You're only allowed png, jpeg, or svg type files");
+                    return View(dishVM);
+                }
             }
 
             if (dishVM.FoodImage != null)
@@ -137,10 +139,7 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return View(vm);
             }
 
-
-
             var ingInDish = await _db._dishIngredients.Where(dishId => dishId.DishId == vm.DishId).FirstOrDefaultAsync(ing => ing.IngredientsId == ingredient.ID);
-
 
             if (ingInDish != null)
             {
@@ -155,7 +154,6 @@ namespace Mellys_Underground_Cuisine.Controllers
                 IngredientsId = ingredient.ID,
             };
 
-
             await _db._dishIngredients.AddAsync(dishIngredient);
             await _db.SaveChangesAsync();
 
@@ -169,7 +167,6 @@ namespace Mellys_Underground_Cuisine.Controllers
         public async Task<IActionResult> DeleteIngredient(Guid dishID, Guid ingID)
         {
             var ingredientsInDish = _db._dishIngredients.Where(gu => gu.DishId == dishID).Include(ingd => ingd.Ingredients).ToList();
-
 
             if (ingredientsInDish is null)
             {
@@ -192,9 +189,26 @@ namespace Mellys_Underground_Cuisine.Controllers
             return RedirectToAction(nameof(AddIngredient), new { id = dishID });
         }
 
-
-        public IActionResult EditDish()
+        [HttpGet]
+        public IActionResult EditDish(Guid id)
         {
+            var exists = _db.Dishes.Where(di => di.Id == id).FirstOrDefault();
+            if (exists is null)
+            {
+                ModelState.AddModelError("Null", "Dish Is Null");
+                return View(new { id = id });
+            }
+            DishVM dish = _mapper.Map<DishVM>(exists);
+
+            return View(dish);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditDish(DishVM vm)
+        {
+            Console.WriteLine("something in edit dish HTTP Post ***********************");
+
             return View();
         }
 

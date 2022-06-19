@@ -29,7 +29,7 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         public string? FilePath { get; set; }
 
         [NotMapped]
-        public IFormFile FoodImage { get; set; }
+        public IFormFile? FoodImage { get; set; }
 
         // these are to shorten the Information and when they get 
         // hovered on we will show full ingredients and informaiton

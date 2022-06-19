@@ -29,6 +29,6 @@ namespace DAL.Entities
         public decimal Price { get; set; }
         
 
-        public string FilePath { get; set; }
+        public string? FilePath { get; set; }
     }
 }
