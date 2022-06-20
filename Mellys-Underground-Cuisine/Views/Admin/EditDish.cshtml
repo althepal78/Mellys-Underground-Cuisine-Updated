@@ -10,6 +10,10 @@
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
                             <h2 class="text-uppercase text-center mb-5">Edit Dish</h2>
+                            @if (Model.FilePath == "")
+                            {
+                                <p>There is no File Path bitches</p>
+                            }                            
 
                             <form asp-action="EditDish" asp-controller="Admin" enctype="multipart/form-data" method="post">
                                 <div class="val" asp-validation-summary="All"></div>
@@ -43,6 +47,7 @@
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                         Edit Dish
                                     </button>
+
                                 </div>
                             </form>
                         </div>
