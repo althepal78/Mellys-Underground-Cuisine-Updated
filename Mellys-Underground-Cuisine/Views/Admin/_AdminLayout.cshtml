@@ -5,13 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/css/bootstrap.css" type="text/css" />
     <link href="~/css/adminpanel.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" 
-          integrity="sha512-6S2HWzVFxruDlZxI3sXOZZ4/eJ8AcxkQH1+JjSe/ONCEqR9L4Ysq5JdT5ipqtzU7WHalNwzwBv+iE51gNHJNqQ==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <title>@ViewData["Title"] MellysUndergroundCuisine</title>
+    <title>@ViewData["Title"] Mellys Underground Cuisine</title>
+    <style>
+        /*This is CSS which is use in our Toast Message UI*/
+        #toast {
+            display: none;
+            border-radius: 62px;
+            display: none;
+            pointer-events: auto;
+            min-width: 300px;
+            font-weight: 600;
+            background-color: #0c0c0c8a;
+            padding: 12px 25px;
+            font-size: 16px;
+            box-shadow: 0 1px 1px rgba(0,0,0,.25), 0 0 1px rgba(0,0,0,.35);          
+            border-radius: 35px 20px 29px 25px;
+            position: fixed;
+            z-index: 999;
+            color: #f9f7f7f7;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+            #toast.show {
+                display: block;                
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+            #toast.show {
+                visibility: visible;               
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+    </style>
 </head>
 <body>
+    
     <div class=container-fluid m-0 p-0>
         <div class="row m-0 p-0">
             <div class=" col-12 col-lg-2 ">
@@ -19,6 +49,7 @@
                     <partial name="SidePanel" />
                 </section>
             </div>
+            <div id="toast"></div>
             <div class="col-12 col-lg-10 main">
                 @RenderBody()
             </div>
@@ -26,13 +57,9 @@
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" 
-        integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" 
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer">
-    </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Styles", required: false)
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

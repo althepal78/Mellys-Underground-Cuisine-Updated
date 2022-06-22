@@ -33,13 +33,13 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
 
         // these are to shorten the Information and when they get 
         // hovered on we will show full ingredients and informaiton
-        [NotMapped]
-        public string InformationShort
-        {
-            get
-            {
-                return Information.Substring(0, 40);
-            }
-        }
+        //[NotMapped]
+        //public string InformationShort
+        //{
+        //    get
+        //    {
+        //        return Information.Substring(0, 40);
+        //    }
+        //}
     }
 }
