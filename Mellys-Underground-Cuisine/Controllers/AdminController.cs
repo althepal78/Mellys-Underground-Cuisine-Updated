@@ -38,7 +38,7 @@ namespace Mellys_Underground_Cuisine.Controllers
         return serverFolder;
       }
 
-      serverFolder = Path.Combine(assemblyPath, vm.FilePath.Replace("/", @"\").TrimStart('\\'));
+      serverFolder = Path.Combine(assemblyPath, "wwwroot", vm.FilePath.Replace("/", @"\").TrimStart('\\'));
       return serverFolder;
     }
     #endregion
@@ -240,15 +240,41 @@ namespace Mellys_Underground_Cuisine.Controllers
         return View(dishVM);
       }
 
-      dishVM.FilePath = exists.FilePath;
-      exists.FilePath = BuildFilePath(dishVM);
+      var dish = _mapper.Map<Dish>(exists);
 
-      if (exists.FilePath == "")
+      if (dishVM.FoodImage is null)
       {
-        exists.FilePath = null;
+        _db.Dishes.Update(dish);
+        await _db.SaveChangesAsync();
+        return RedirectToAction("Index", "Admin");
       }
 
-      _db.Dishes.Update(exists);
+      if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
+      {
+        //ToDo: Add Logging
+        ModelState.AddModelError("InDB", "Not a valid image type");
+        return View(dishVM);
+      }
+
+      var currentFilePath = BuildFilePath(new DishVM { FilePath = exists.FilePath });
+      if (System.IO.File.Exists(currentFilePath))
+      {
+        System.IO.File.Delete(currentFilePath);
+      }
+
+      var filePath = BuildFilePath(dishVM);
+      var fileName = Guid.NewGuid().ToString() + "_" + dishVM.FoodImage.FileName;
+      var absolutePath = filePath + fileName;
+      var basicPath = $"/images/foodimages/{fileName}";
+      dish.FilePath = basicPath;
+
+      //save the file to disk
+      using (var fs = new FileStream(absolutePath, FileMode.Create))
+      {
+        dishVM.FoodImage.CopyTo(fs);
+      }
+
+      _db.Dishes.Update(dish);
       await _db.SaveChangesAsync();
 
       return RedirectToAction("Index", "Admin");
