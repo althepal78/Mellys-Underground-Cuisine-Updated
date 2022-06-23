@@ -28,7 +28,8 @@ namespace DAL.Entities
         [Column(TypeName = "decimal(5, 2)")]
         public decimal Price { get; set; }
         
+        public bool IsDefaulting { get; set; } = false;
 
-        public string? FilePath { get; set; }
+    public string? FilePath { get; set; }
     }
 }

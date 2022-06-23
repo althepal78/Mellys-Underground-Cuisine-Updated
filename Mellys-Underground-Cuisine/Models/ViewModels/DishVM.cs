@@ -31,6 +31,8 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         [NotMapped]
         public IFormFile? FoodImage { get; set; }
 
+        public bool IsDefualting { get; set; } = false;
+
         // these are to shorten the Information and when they get 
         // hovered on we will show full ingredients and informaiton
         //[NotMapped]

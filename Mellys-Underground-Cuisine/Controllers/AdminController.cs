@@ -41,6 +41,58 @@ namespace Mellys_Underground_Cuisine.Controllers
             serverFolder = Path.Combine(assemblyPath, vm.FilePath.Replace("/", @"\").TrimStart('\\'));
             return serverFolder;
         }
+
+        //public string CreateFilePath(DishVM vm)
+        //{
+        //    string folder;
+        //    string serverFolder;
+
+
+        //    if (vm.FoodImage != null)
+        //    {
+        //        if (vm.FoodImage.ContentType != "image/jpeg" && vm.FoodImage.ContentType != "image/png" && vm.FoodImage.ContentType != "image/svg+xml")
+        //        {
+        //            return "Not Valid Image Type";
+        //        }
+
+
+        //        if (vm.FilePath != null)
+        //        {
+        //            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, vm.FilePath);
+
+        //            Console.WriteLine("filePath not null" + filePath);
+        //            if (System.IO.File.Exists(filePath))
+        //            {
+        //                System.IO.File.Delete(filePath);
+        //                vm.FilePath = null;
+        //            }
+        //        }
+
+        //        //creating string to where the folders of the images will be
+        //        folder = "images/foodimages/";
+
+        //        // create the path name
+        //        folder += Guid.NewGuid().ToString() + "_" + vm.FoodImage.FileName;
+
+        //        // combine paths to create the path
+        //        serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+
+        //        Console.WriteLine(serverFolder);
+
+        //        // make it the filepath So i can link to it 
+        //        vm.FilePath = "/" + folder;
+
+        //        // create the connection
+        //        vm.FoodImage.CopyTo(new FileStream(serverFolder, FileMode.Create));
+
+        //        return vm.FilePath;
+        //    }
+        //    if (vm.FilePath != null)
+        //    {
+        //        return vm.FilePath;
+        //    }
+        //    return "";
+        //}
         #endregion
 
         public IActionResult Index()
@@ -63,6 +115,7 @@ namespace Mellys_Underground_Cuisine.Controllers
             return View();
         }
 
+
         [HttpPost]
         public async Task<IActionResult> AddDish(DishVM dishVM)
         {
@@ -73,32 +126,80 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return View(dishVM);
             }
 
-            var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
+            var newDish = _mapper.Map<Dish>(dishVM);
+
+            var exists = await _db.Dishes.Where(di => di.Name == newDish.Name).FirstOrDefaultAsync();
             if (exists != null)
             {
                 ModelState.AddModelError("InDB", "Dish already exists in this database");
                 return View(dishVM);
             }
-
-            dishVM.FilePath = BuildFilePath(dishVM);
-
-            switch (dishVM.FilePath)
+            if (dishVM.FoodImage != null)
             {
-                case "":
-                    dishVM.FilePath = null;
-                    break;
-                case "Not Valid Image Type":
-                    ModelState.AddModelError("TypeError", dishVM.FilePath);
+                if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
+                {
+                    //ToDo: Add Logging
+                    ModelState.AddModelError("InDB", "Not a valid image type");
                     return View(dishVM);
+                }
+
+                var filePath = BuildFilePath(dishVM);
+                var fileName = Guid.NewGuid().ToString() + "_" + dishVM.FoodImage.FileName;
+                var absolutePath = filePath + fileName;
+                var basicPath = $"/images/foodimages/{fileName}";
+                newDish.FilePath = basicPath;
+
+                //save the file to disk
+                using (var fs = new FileStream(absolutePath, FileMode.Create))
+                {
+                    dishVM.FoodImage.CopyTo(fs);
+                }
             }
-
-            var newDish = _mapper.Map<Dish>(dishVM);
-
+            else
+            {              
+                newDish.FilePath = $"/images/foodimages/Image-Coming-Soon.png";
+                newDish.IsDefaulting = true;
+            }
             await _db.Dishes.AddAsync(newDish);
             await _db.SaveChangesAsync();
 
             return RedirectToAction("Index", "Admin");
         }
+        //public async Task<IActionResult> AddDish(DishVM dishVM)
+        //{
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ModelState.AddModelError("ModelFailure", "failed Model State");
+        //        return View(dishVM);
+        //    }
+
+        //    var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
+        //    if (exists != null)
+        //    {
+        //        ModelState.AddModelError("InDB", "Dish already exists in this database");
+        //        return View(dishVM);
+        //    }
+
+        //    dishVM.FilePath = CreateFilePath(dishVM);
+
+        //    switch (dishVM.FilePath)
+        //    {
+        //        case "":
+        //            dishVM.FilePath = null;
+        //            break;
+        //        case "Not Valid Image Type":
+        //            ModelState.AddModelError("TypeError", dishVM.FilePath);
+        //            return View(dishVM);
+        //    }
+
+        //    var newDish = _mapper.Map<Dish>(dishVM);
+
+        //    await _db.Dishes.AddAsync(newDish);
+        //    await _db.SaveChangesAsync();
+
+        //    return RedirectToAction("Index", "Admin");
+        //}
 
 
 
@@ -221,19 +322,71 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return View(dishVM);
             }
 
-            dishVM.FilePath = exists.FilePath;
-            exists.FilePath = BuildFilePath(dishVM);
+            var dish = _mapper.Map<Dish>(exists);
 
-            if(exists.FilePath == "")
+            if (dishVM.FoodImage is null)
             {
-                exists.FilePath = null;
+                _db.Dishes.Update(dish);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("Index", "Admin");
             }
 
-            _db.Dishes.Update(exists);
+            if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
+            {
+                //ToDo: Add Logging
+                ModelState.AddModelError("InDB", "Not a valid image type");
+                return View(dishVM);
+            }
+
+            var currentFilePath = BuildFilePath(new DishVM { FilePath = exists.FilePath });
+            if (System.IO.File.Exists(currentFilePath))
+            {
+                System.IO.File.Delete(currentFilePath);
+            }
+
+            var filePath = BuildFilePath(dishVM);
+            var fileName = Guid.NewGuid().ToString() + "_" + dishVM.FoodImage.FileName;
+            var absolutePath = filePath + fileName;
+            var basicPath = $"/images/foodimages/{fileName}";
+            dish.FilePath = basicPath;
+
+            //save the file to disk
+            using (var fs = new FileStream(absolutePath, FileMode.Create))
+            {
+                dishVM.FoodImage.CopyTo(fs);
+            }
+
+            _db.Dishes.Update(dish);
             await _db.SaveChangesAsync();
 
             return RedirectToAction("Index", "Admin");
         }
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> EditDish(DishVM dishVM)
+        //{
+        //    var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
+
+        //    if (exists is null)
+        //    {
+        //        ModelState.AddModelError("Null", "Dish Is Null");
+        //        return View(dishVM);
+        //    }
+
+        //    dishVM.FilePath = exists.FilePath;
+        //    //exists.FilePath = CreateFilePath(dishVM);
+
+        //    if(exists.FilePath == "")
+        //    {
+        //        exists.FilePath = null;
+        //    }
+
+        //    _db.Dishes.Update(exists);
+        //    await _db.SaveChangesAsync();
+
+        //    return RedirectToAction("Index", "Admin");
+        //}
 
 
         [HttpGet]
