@@ -4,8 +4,6 @@ using DAL.Entities;
 using Mellys_Underground_Cuisine.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mellys_Underground_Cuisine.Controllers
@@ -28,30 +26,54 @@ namespace Mellys_Underground_Cuisine.Controllers
 
         public string CreateFilePath(DishVM vm)
         {
-            if(vm.FilePath != null)
+            string folder;
+            string serverFolder;
+
+           
+            if (vm.FoodImage != null)
             {
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, vm.FilePath);
-                if (File.Exists(@"filePath"))
+                if (vm.FoodImage.ContentType != "image/jpeg" && vm.FoodImage.ContentType != "image/png" && vm.FoodImage.ContentType != "image/svg+xml")
                 {
-                    File.Delete(filePath);
+                    return "Not Valid Image Type";
                 }
+
+             
+                if(vm.FilePath != null)
+                {
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, vm.FilePath);
+
+                    Console.WriteLine("filePath not null" + filePath);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                        vm.FilePath = null;
+                    }
+                }
+
+                //creating string to where the folders of the images will be
+                folder = "images/foodimages/";
+
+                // create the path name
+                folder += Guid.NewGuid().ToString() + "_" + vm.FoodImage.FileName;
+
+                // combine paths to create the path
+                serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+
+                Console.WriteLine(serverFolder);
+
+                // make it the filepath So i can link to it 
+                vm.FilePath = "/" + folder;
+
+                // create the connection
+                vm.FoodImage.CopyTo(new FileStream(serverFolder, FileMode.Create));
+
+                return vm.FilePath;
             }
-            //creating string to where the folders of the images will be
-            string folder = "images/foodimages/";
-
-            // create the path name
-            folder += Guid.NewGuid().ToString() + "_" + vm.FoodImage.FileName;
-
-            // make it the filepath So i can link to it 
-            vm.FilePath = "/" + folder;
-
-            // combine paths to create the path
-            string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
-
-            // create the connection
-            vm.FoodImage.CopyTo(new FileStream(serverFolder, FileMode.Create));
-
-            return vm.FilePath;
+            if (vm.FilePath != null)
+            {
+                return vm.FilePath;
+            }
+            return "";
         }
 
         public IActionResult Index()
@@ -84,16 +106,23 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return View(dishVM);
             }
 
-
-            if (dishVM.FoodImage != null)
+            var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
+            if (exists != null)
             {
-                if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
-                {
-                    ModelState.AddModelError("File Type Error", "You're only allowed png, jpeg/jpg, or svg type files");
-                    return View(dishVM);
-                }
+                ModelState.AddModelError("InDB", "Dish already exists in this database");
+                return View(dishVM);
+            }
 
-              dishVM.FilePath = CreateFilePath(dishVM);
+            dishVM.FilePath = CreateFilePath(dishVM);
+
+            switch (dishVM.FilePath)
+            {
+                case "":
+                    dishVM.FilePath = null;
+                    break;
+                case "Not Valid Image Type":
+                    ModelState.AddModelError("TypeError", dishVM.FilePath);
+                    return View(dishVM);
             }
 
             var newDish = _mapper.Map<Dish>(dishVM);
@@ -200,19 +229,14 @@ namespace Mellys_Underground_Cuisine.Controllers
         public IActionResult EditDish(Guid id)
         {
             var exists = _db.Dishes.Where(di => di.Id == id).FirstOrDefault();
+
             if (exists is null)
             {
                 ModelState.AddModelError("Null", "Dish Is Null");
                 return View(new { id = id });
             }
-            DishVM dish = _mapper.Map<DishVM>(exists);
 
-            if (dish.FilePath is null)
-            {
-                ModelState.AddModelError("FilePath", "No Iformation in image");
-                Console.WriteLine("FilePath is null **********************");
-                return View(dish);
-            }
+            DishVM dish = _mapper.Map<DishVM>(exists);
 
 
             return View(dish);
@@ -222,47 +246,25 @@ namespace Mellys_Underground_Cuisine.Controllers
         [HttpPost]
         public async Task<IActionResult> EditDish(DishVM dishVM)
         {
-            var exists = _db.Dishes.Include(ing => ing.DishIngredient).Where(di => di.Id == dishVM.Id).FirstOrDefault();
+            var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
+
             if (exists is null)
             {
+                ModelState.AddModelError("Null", "Dish Is Null");
                 return View(dishVM);
             }
 
+            dishVM.FilePath = exists.FilePath;
+            exists.FilePath = CreateFilePath(dishVM);
 
-
-            if (dishVM.FoodImage != null)
-
+            if(exists.FilePath == "")
             {
-                if (dishVM.FoodImage.ContentType != "image/jpeg" && dishVM.FoodImage.ContentType != "image/png" && dishVM.FoodImage.ContentType != "image/svg+xml")
-                {
-                    ModelState.AddModelError("File Type Error", "You're only allowed png, jpeg, or svg type files");
-                    return View(dishVM);
-                }
-
-                //creating string to where the folders of the images will be
-                string folder = "images/foodimages/";
-
-                // create the path name
-                folder += Guid.NewGuid().ToString() + "_" + dishVM.FoodImage.FileName;
-
-                // combine paths to create the path
-                string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
-
-                // make it the filepath So i can link to it 
-                dishVM.FilePath = "/" + folder;
-
-                // create the connection
-                await dishVM.FoodImage.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+                exists.FilePath = null;
             }
-            _db.Entry(exists).State = EntityState.Detached;
 
-            var dish = _mapper.Map<Dish>(dishVM);
-            if (exists.FilePath != null)
-            {
-                dish.FilePath = exists.FilePath;
-            }
-            _db.Dishes.Update(dish);
-            _db.SaveChanges();
+            _db.Dishes.Update(exists);
+            await _db.SaveChangesAsync();
+
             return RedirectToAction("Index", "Admin");
         }
 

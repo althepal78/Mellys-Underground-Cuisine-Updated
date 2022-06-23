@@ -9,12 +9,10 @@
                 <div class="col-12 col-md-9 col-lg-7 col-xl-6">
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
-                            <h2 class="text-uppercase text-center mb-5">Edit Dish</h2>
-                                                     
-
+                            <h2 class="text-uppercase text-center mb-5">Edit Dish</h2> 
                             <form asp-action="EditDish" asp-controller="Admin" enctype="multipart/form-data" method="post">
                                 <div class="val" asp-validation-summary="All"></div>
-
+                                <input hidden asp-for="@Model.Id" />
                                 <div class="form-outline mb-4">
                                     <input asp-for="Name" class="form-control form-control-lg" />
                                     <label class="form-label" asp-for="Name">Dish Name</label>
