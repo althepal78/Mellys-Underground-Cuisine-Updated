@@ -4,7 +4,7 @@
 <div class="container-fluid m-0 p-0">
     <div class="row justify-content-center m-0 p-0">
         <div class="col-12 col-lg-12">
-            <table class="table bg-black table-dark table-hover text-light border-5 border-secondary mt-2">
+            <table class="table bg-black">
                 <thead class="">
                     <tr>
                         <th>Image</th>
@@ -23,7 +23,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td><img src="@item.FilePath" class="img-thumbnail" /></td>
+                                <td class="img-thumbnail border-0"><img src="@item.FilePath"  /></td>
                                 <td>@item.Name</td>
                                 @if (item.DishIngredient != null)
                                 {

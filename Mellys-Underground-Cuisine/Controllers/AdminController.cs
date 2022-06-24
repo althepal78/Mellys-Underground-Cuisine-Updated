@@ -27,7 +27,7 @@ namespace Mellys_Underground_Cuisine.Controllers
         #region Helper Methods
         public static string BuildFilePath(DishVM vm)
         {
-            var assemblyPath = Directory.GetCurrentDirectory(); /*Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)*/;
+            var assemblyPath = Directory.GetCurrentDirectory();
             string serverFolder = "";
             if (vm.FilePath is null)
             {
@@ -38,61 +38,9 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return serverFolder;
             }
 
-            serverFolder = Path.Combine(assemblyPath, vm.FilePath.Replace("/", @"\").TrimStart('\\'));
+            serverFolder = Path.Combine(assemblyPath, "wwwroot", vm.FilePath.Replace("/", @"\").TrimStart('\\'));
             return serverFolder;
         }
-
-        //public string CreateFilePath(DishVM vm)
-        //{
-        //    string folder;
-        //    string serverFolder;
-
-
-        //    if (vm.FoodImage != null)
-        //    {
-        //        if (vm.FoodImage.ContentType != "image/jpeg" && vm.FoodImage.ContentType != "image/png" && vm.FoodImage.ContentType != "image/svg+xml")
-        //        {
-        //            return "Not Valid Image Type";
-        //        }
-
-
-        //        if (vm.FilePath != null)
-        //        {
-        //            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, vm.FilePath);
-
-        //            Console.WriteLine("filePath not null" + filePath);
-        //            if (System.IO.File.Exists(filePath))
-        //            {
-        //                System.IO.File.Delete(filePath);
-        //                vm.FilePath = null;
-        //            }
-        //        }
-
-        //        //creating string to where the folders of the images will be
-        //        folder = "images/foodimages/";
-
-        //        // create the path name
-        //        folder += Guid.NewGuid().ToString() + "_" + vm.FoodImage.FileName;
-
-        //        // combine paths to create the path
-        //        serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
-
-        //        Console.WriteLine(serverFolder);
-
-        //        // make it the filepath So i can link to it 
-        //        vm.FilePath = "/" + folder;
-
-        //        // create the connection
-        //        vm.FoodImage.CopyTo(new FileStream(serverFolder, FileMode.Create));
-
-        //        return vm.FilePath;
-        //    }
-        //    if (vm.FilePath != null)
-        //    {
-        //        return vm.FilePath;
-        //    }
-        //    return "";
-        //}
         #endregion
 
         public IActionResult Index()
@@ -339,6 +287,8 @@ namespace Mellys_Underground_Cuisine.Controllers
             }
 
             var currentFilePath = BuildFilePath(new DishVM { FilePath = exists.FilePath });
+            Console.WriteLine("File Path is: "+ currentFilePath);
+
             if (System.IO.File.Exists(currentFilePath))
             {
                 System.IO.File.Delete(currentFilePath);

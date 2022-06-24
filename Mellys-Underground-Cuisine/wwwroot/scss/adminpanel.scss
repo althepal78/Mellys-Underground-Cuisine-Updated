@@ -4,12 +4,40 @@
     font-family: 'montserrat';
     background: #fff;
 }
-#itsFixed{
-    position:relative;
+
+#itsFixed {
+    position: relative;
 }
-img{
+
+img {
     padding: 1.25rem;
     width: 12.5rem;
+}
+
+table {
+    border: 4px solid #ff9ff6 !important;
+    color: #fff !important;
+
+    th{
+        text-align:center;
+    }
+
+    td {
+        border: 2px solid #ff9ff6;
+        border-inline-color: #ff9ff6;
+        border-block-color: #ff9ff6;
+    }
+
+    tr {
+        border: 2px solid #ff9ff6;
+        border-inline-color: #ff9ff6;
+        border-block-color: #ff9ff6;
+    }
+
+    tr:hover {
+        color: #ff9ff6;
+        background-color: #242424;
+    }
 }
 
 nav ul {
@@ -27,9 +55,10 @@ nav ul li {
     list-style: none;
 }
 
-.main{
+.main {
     z-index: 100 !important;
 }
+
 nav ul li a {
     display: block;
     font-family: 'montserrat';
