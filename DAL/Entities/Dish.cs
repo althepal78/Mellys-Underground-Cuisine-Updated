@@ -21,7 +21,7 @@ namespace DAL.Entities
         public ICollection<DishIngredient> DishIngredient { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         [Required]
         [DataType(DataType.Currency)]

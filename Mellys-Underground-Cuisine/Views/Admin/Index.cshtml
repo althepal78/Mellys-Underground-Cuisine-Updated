@@ -12,7 +12,6 @@
                         <th>Ingredients</th>
                         <th>Dish Information</th>
                         <th>Dish Price</th>
-                        <th>Quantities Left</th>
                         <th>Add Ingredients</th>
                     </tr>
                 </thead>
@@ -48,8 +47,7 @@
                                     <td>No Ingredients yet</td>
                                 }
                                 <td>@item.Information</td>
-                                <td>$ @item.Price </td>
-                                <td>@item.Quantity</td>
+                                <td>$ @item.Price </td>                               
                                 <td>
 
                                     <a class="text-success" asp-controller="Admin" asp-action="AddIngredient" asp-route-id="@item.Id">Add Ingredients</a><br />
