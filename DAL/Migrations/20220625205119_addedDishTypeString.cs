@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class fixedProject : Migration
+    public partial class addedDishTypeString : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -176,7 +176,9 @@ namespace DAL.Migrations
                     Information = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DishType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDefaulting = table.Column<bool>(type: "bit", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>

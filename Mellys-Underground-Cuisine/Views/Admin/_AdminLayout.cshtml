@@ -7,49 +7,17 @@
     <link href="~/css/adminpanel.css" rel="stylesheet" type="text/css" />
 
     <title>@ViewData["Title"] Mellys Underground Cuisine</title>
-    <style>
-        /*This is CSS which is use in our Toast Message UI*/
-        #toast {
-            display: none;
-            border-radius: 62px;
-            display: none;
-            pointer-events: auto;
-            min-width: 300px;
-            font-weight: 600;
-            background-color: #0c0c0c8a;
-            padding: 12px 25px;
-            font-size: 16px;
-            box-shadow: 0 1px 1px rgba(0,0,0,.25), 0 0 1px rgba(0,0,0,.35);          
-            border-radius: 35px 20px 29px 25px;
-            position: fixed;
-            z-index: 999;
-            color: #f9f7f7f7;
-            border-radius: 10px;
-            margin-top: 5px;
-        }
-
-            #toast.show {
-                display: block;                
-                animation: fadein 0.5s, fadeout 0.5s 2.5s;
-            }
-
-            #toast.show {
-                visibility: visible;               
-                animation: fadein 0.5s, fadeout 0.5s 2.5s;
-            }
-
-    </style>
+   
 </head>
 <body>
     
     <div class=container-fluid m-0 p-0>
         <div class="row m-0 p-0">
-            <div class=" col-12 col-lg-2 ">
+            <div class="col-12 col-lg-2 ">
                 <section id="itsFixed">
                     <partial name="SidePanel" />
                 </section>
             </div>
-            <div id="toast"></div>
             <div class="col-12 col-lg-10 main">
                 @RenderBody()
             </div>

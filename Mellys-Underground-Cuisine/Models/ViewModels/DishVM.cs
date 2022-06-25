@@ -20,7 +20,9 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         public DishIngredient? dishIngredient { get; set; }
 
         [Required]
-        public int? Quantity { get; set; } 
+        public string DishType { get; set; }
+
+        public int Quantity { get; set; }
 
         [Required]
         public decimal Price { get; set; }
@@ -31,6 +33,6 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         public IFormFile? FoodImage { get; set; }
 
         public bool IsDefualting { get; set; } = false;
-             
+
     }
 }

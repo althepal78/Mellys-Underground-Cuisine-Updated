@@ -105,7 +105,7 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             await _signInManager.SignInAsync(isUserInDb, validPassword);
 
-            return RedirectToAction("Menu", "Menu");
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> Logout()

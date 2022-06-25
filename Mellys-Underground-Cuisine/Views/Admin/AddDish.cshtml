@@ -28,11 +28,24 @@
                                     <input asp-for="Price" class="form-control form-control-lg" />
                                     <label asp-for="Price" class="form-label">Price</label>
                                 </div>
-                                
+
                                 <div class="form-outline  mb-4">
                                     <input asp-for="FoodImage" class="form-control form-control-lg" />
                                     <label asp-for="FoodImage" class="form-label">Browse</label>
                                 </div>
+
+                                <div class="form-outline  mb-4">
+                                    <p>Please select your Dish type:</p>
+                                    <input type="radio" id="food" name="dishType" value="food">
+                                    <label for="food">Food</label><br />
+                                    <input type="radio" id="snack" name="dishType" value="snack">
+                                    <label for="snack">Snack</label><br />
+                                    <input type="radio" id="dessert" name="dishType" value="dessert">
+                                    <label for="dessert">Dessert</label><br />
+                                    <input type="radio" id="Drink" name="dishType" value="Drink">
+                                    <label for="Drink">Drink</label>
+                                </div>
+
                                 <div class="d-flex justify-content-center">
                                     <button type="submit" id="DishButton"
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">

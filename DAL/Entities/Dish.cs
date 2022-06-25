@@ -17,19 +17,21 @@ namespace DAL.Entities
         [StringLength(500)]
         [MinLength(45)]
         public string Information { get; set; }
-        
+
         public ICollection<DishIngredient> DishIngredient { get; set; }
 
-        [Required]
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
 
         [Required]
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(5, 2)")]
         public decimal Price { get; set; }
-        
+
+        [Required]
+        public string DishType { get; set; }
+
         public bool IsDefaulting { get; set; } = false;
 
-    public string? FilePath { get; set; }
+        public string? FilePath { get; set; }
     }
 }
