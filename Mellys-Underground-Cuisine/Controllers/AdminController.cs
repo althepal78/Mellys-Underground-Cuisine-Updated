@@ -104,7 +104,7 @@ namespace Mellys_Underground_Cuisine.Controllers
                 }
             }
             else
-            {              
+            {
                 newDish.FilePath = $"/images/foodimages/Image-Coming-Soon.png";
                 newDish.IsDefaulting = true;
             }
@@ -113,45 +113,7 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             return RedirectToAction("Index", "Admin");
         }
-        //public async Task<IActionResult> AddDish(DishVM dishVM)
-        //{
 
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ModelState.AddModelError("ModelFailure", "failed Model State");
-        //        return View(dishVM);
-        //    }
-
-        //    var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
-        //    if (exists != null)
-        //    {
-        //        ModelState.AddModelError("InDB", "Dish already exists in this database");
-        //        return View(dishVM);
-        //    }
-
-        //    dishVM.FilePath = CreateFilePath(dishVM);
-
-        //    switch (dishVM.FilePath)
-        //    {
-        //        case "":
-        //            dishVM.FilePath = null;
-        //            break;
-        //        case "Not Valid Image Type":
-        //            ModelState.AddModelError("TypeError", dishVM.FilePath);
-        //            return View(dishVM);
-        //    }
-
-        //    var newDish = _mapper.Map<Dish>(dishVM);
-
-        //    await _db.Dishes.AddAsync(newDish);
-        //    await _db.SaveChangesAsync();
-
-        //    return RedirectToAction("Index", "Admin");
-        //}
-
-
-
-        // this is the get needs a ID 
         [HttpGet]
         public IActionResult AddIngredient(Guid id)
         {
@@ -269,8 +231,13 @@ namespace Mellys_Underground_Cuisine.Controllers
                 ModelState.AddModelError("Null", "Dish Is Null");
                 return View(dishVM);
             }
+            dishVM.FilePath = exists.FilePath;
+            dishVM.DishType = exists.DishType;
+            _db.Entry(exists).State = EntityState.Detached;
 
-            var dish = _mapper.Map<Dish>(exists);
+
+            var dish = _mapper.Map<Dish>(dishVM);
+
 
             if (dishVM.FoodImage is null)
             {
@@ -287,13 +254,11 @@ namespace Mellys_Underground_Cuisine.Controllers
             }
 
             var currentFilePath = BuildFilePath(new DishVM { FilePath = exists.FilePath });
-            Console.WriteLine("File Path is: "+ currentFilePath);
-
             if (System.IO.File.Exists(currentFilePath))
             {
                 System.IO.File.Delete(currentFilePath);
             }
-
+            dishVM.FilePath = null;
             var filePath = BuildFilePath(dishVM);
             var fileName = Guid.NewGuid().ToString() + "_" + dishVM.FoodImage.FileName;
             var absolutePath = filePath + fileName;
@@ -312,33 +277,6 @@ namespace Mellys_Underground_Cuisine.Controllers
             return RedirectToAction("Index", "Admin");
         }
 
-
-        //[HttpPost]
-        //public async Task<IActionResult> EditDish(DishVM dishVM)
-        //{
-        //    var exists = await _db.Dishes.Where(di => di.Id == dishVM.Id).FirstOrDefaultAsync();
-
-        //    if (exists is null)
-        //    {
-        //        ModelState.AddModelError("Null", "Dish Is Null");
-        //        return View(dishVM);
-        //    }
-
-        //    dishVM.FilePath = exists.FilePath;
-        //    //exists.FilePath = CreateFilePath(dishVM);
-
-        //    if(exists.FilePath == "")
-        //    {
-        //        exists.FilePath = null;
-        //    }
-
-        //    _db.Dishes.Update(exists);
-        //    await _db.SaveChangesAsync();
-
-        //    return RedirectToAction("Index", "Admin");
-        //}
-
-
         [HttpGet]
         public async Task<IActionResult> DeleteDish(Guid id)
         {
@@ -353,6 +291,13 @@ namespace Mellys_Underground_Cuisine.Controllers
 
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult CreateMenu()
+        {
+
+            var dishList = _db.Dishes.ToList();
+            return View(dishList);
         }
 
     }

@@ -26,5 +26,12 @@
     "minify": {
       "enabled": false
     }
+  },
+  {
+    "outputFile": "wwwroot/css/adminmenu.css",
+    "inputFile": "wwwroot/scss/adminmenu.scss",
+    "minify": {
+      "enabled": false
+    }
   }
 ]

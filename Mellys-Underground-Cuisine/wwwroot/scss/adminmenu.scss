@@ -1,0 +1,20 @@
+﻿.card-header {
+    position: relative;
+
+    .cb {
+        position: absolute;
+        right: 5%;
+        top: 15%;
+        height: 2rem;
+        width: 2rem;
+    }
+
+    .cb:checked {
+        accent-color: #ff9ff6;
+        color: white !important;
+    } 
+}
+inpug[type="checkbox"] {
+    accent-color: #ff9ff6;
+    color: white !important;
+}

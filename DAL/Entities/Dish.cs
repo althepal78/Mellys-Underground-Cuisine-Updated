@@ -32,6 +32,8 @@ namespace DAL.Entities
 
         public bool IsDefaulting { get; set; } = false;
 
+        public Menu DailyMenu { get; set; }
+
         public string? FilePath { get; set; }
     }
 }
