@@ -1,9 +1,8 @@
-﻿@using DAL.Entities
-@model List<Dish>
+﻿@model Mellys_Underground_Cuisine.Models.ViewModels.MenuVM
 
 <h1>Create Your Menu</h1>
 
-<div class="d-xl-flex m-1">
+<div class="m-1">
 
     @if (Model is null)
     {
@@ -11,7 +10,7 @@
     }
     else
     {
-        foreach (var item in Model)
+        foreach (var item in @Model.DishList)
         {
             <div class="card bg-black text-white m-1" style="max-width: 18rem;">
 
@@ -34,14 +33,17 @@
     let checkboxElems = document.querySelectorAll("input[type='checkbox']");
 
     for (let i = 0; i < checkboxElems.length; i++) {
-        checkboxElems[i].addEventListener("click", displayCheck);
-        checkboxElems[i].id 
+        checkboxElems[i].addEventListener("click", function(e) {
+            displayCheck(e, checkboxElems[i].id);
+        })
     }
 
-    function displayCheck(e) {
+    function displayCheck(e, id) {
         if (e.target.checked) {
+
             let input = prompt("How many servings per dish do you required? Please put answer in whole numbers etg(45)");
             quantity = parseInt(input);
+
             while (isNaN(quantity)) {
                 input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
                 quantity = parseInt(input);
@@ -50,13 +52,29 @@
                     return;
                 }
             }
+
+            const data = {
+                id: id,
+                quantity: quantity
+            }
+
+            $.ajax({
+                url: "/Admin/AddQuantity",
+                type: "POST",
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "json",
+                success: function(hey) {
+                    console.log(hey);
+                },
+                error: function(xhr, rest, text) {
+                    console.log(xhr);
+                }
+            })
+
+            console.log(data);
         }
-        data{
-            Quantity: quantity
-        }
-        async getQuantity() => {
-            const getQ = fetch()
-        }
+
     }
 </script>
 

@@ -300,25 +300,31 @@ namespace Mellys_Underground_Cuisine.Controllers
 
         public IActionResult CreateMenu()
         {
+            var dishlist = new MenuVM
+            {
+                DishList = _db.Dishes.ToList()
+            };
 
-            var dishList = _db.Dishes.ToList();
-            return View(dishList);
+            return View(dishlist);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddQuantity(Guid id, int quantity)
+        public async Task<IActionResult> AddQuantity(AddQuantityVM vm)
         {
-            var exists = await _db.Dishes.Where(di => di.Id == id).FirstOrDefaultAsync();
 
-            if(exists is null)
-            {
-                return View();
-            }
+            return Ok();
+            
+            //var exists = await _db.Dishes.Where(di => di.Id ).FirstOrDefaultAsync();
 
-            exists.Quantity = quantity;
-            _db.Dishes.Update(exists);
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(CreateMenu));
+            //if (exists is null)
+            //{
+            //    return View();
+            //}
+
+            //exists.Quantity = quantity;
+            //_db.Dishes.Update(exists);
+            //await _db.SaveChangesAsync();
+            //return RedirectToAction(nameof(CreateMenu));
 
         }
 
