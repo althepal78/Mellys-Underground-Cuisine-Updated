@@ -1,7 +1,6 @@
 ﻿@using DAL.Entities
 @model List<Dish>
 
-
 <h1>Create Your Menu</h1>
 
 <div class="d-xl-flex m-1">
@@ -19,7 +18,7 @@
                 <div class="card-header text-white">
                     @item.Name
                     <form>
-                        <input type="checkbox" id="@item.Name" class="cb text-white" />
+                        <input type="checkbox" id="@item.Id" class="cb text-white" />
                     </form>
                 </div>
                 <img class="card-img-top" src="@item.FilePath" alt="Card image cap">
@@ -36,19 +35,27 @@
 
     for (let i = 0; i < checkboxElems.length; i++) {
         checkboxElems[i].addEventListener("click", displayCheck);
+        checkboxElems[i].id 
     }
 
     function displayCheck(e) {
         if (e.target.checked) {
             let input = prompt("How many servings per dish do you required? Please put answer in whole numbers etg(45)");
             quantity = parseInt(input);
-            
-            if (isNaN(quantity)) {
-                do {
-                    input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
-                    quantity = parseInt(input);
-                }while(isNaN(quantity))                            
+            while (isNaN(quantity)) {
+                input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
+                quantity = parseInt(input);
+                if (input === null) {
+                    e.target.checked = false;
+                    return;
+                }
             }
+        }
+        data{
+            Quantity: quantity
+        }
+        async getQuantity() => {
+            const getQ = fetch()
         }
     }
 </script>

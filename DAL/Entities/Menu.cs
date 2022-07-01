@@ -7,6 +7,6 @@ namespace DAL.Entities
         [Key]
         public Guid ID { get; set; }
 
-        public List<Dish> MenuDish { get; set; }
+        public List<Dish>? MenuDish { get; set; }
     }
 }

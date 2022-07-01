@@ -45,12 +45,17 @@ namespace Mellys_Underground_Cuisine.Controllers
 
         public IActionResult Index()
         {
-            List<Dish> exists = _db.Dishes
-                .Include(di => di.DishIngredient)
-                .ThenInclude(ing => ing.Ingredients).ToList();
 
-            return View(exists);
+            if (_db.Dishes.ToList() != null)
+            {
+                List<Dish> exists = _db.Dishes
+                     .Include(di => di.DishIngredient)
+                     .ThenInclude(ing => ing.Ingredients).ToList();
 
+                return View(exists);
+            }
+
+            return View();
         }
 
         public IActionResult SidePanel()
@@ -298,6 +303,23 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             var dishList = _db.Dishes.ToList();
             return View(dishList);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddQuantity(Guid id, int quantity)
+        {
+            var exists = await _db.Dishes.Where(di => di.Id == id).FirstOrDefaultAsync();
+
+            if(exists is null)
+            {
+                return View();
+            }
+
+            exists.Quantity = quantity;
+            _db.Dishes.Update(exists);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(CreateMenu));
+
         }
 
     }

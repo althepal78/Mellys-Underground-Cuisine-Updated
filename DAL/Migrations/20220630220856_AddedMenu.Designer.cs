@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220630213332_AddedMenu")]
+    [Migration("20220630220856_AddedMenu")]
     partial class AddedMenu
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,7 +102,7 @@ namespace DAL.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("DailyMenuID")
+                    b.Property<Guid?>("DailyMenuID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DishType")
@@ -325,9 +325,7 @@ namespace DAL.Migrations
 
                     b.HasOne("DAL.Entities.Menu", "DailyMenu")
                         .WithMany("MenuDish")
-                        .HasForeignKey("DailyMenuID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DailyMenuID");
 
                     b.Navigation("DailyMenu");
                 });

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220625205119_addedDishTypeString")]
-    partial class addedDishTypeString
+    [Migration("20220630221705_AddedManyToManyInDishEntity")]
+    partial class AddedManyToManyInDishEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -166,6 +166,32 @@ namespace DAL.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Menu", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Menu");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.Property<Guid>("DailyMenuID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MenuDishId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DailyMenuID", "MenuDishId");
+
+                    b.HasIndex("MenuDishId");
+
+                    b.ToTable("DishMenu");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -325,6 +351,21 @@ namespace DAL.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Ingredients");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.HasOne("DAL.Entities.Menu", null)
+                        .WithMany()
+                        .HasForeignKey("DailyMenuID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Entities.Dish", null)
+                        .WithMany()
+                        .HasForeignKey("MenuDishId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

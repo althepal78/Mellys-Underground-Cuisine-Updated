@@ -100,9 +100,6 @@ namespace DAL.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("DailyMenuID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("DishType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -132,8 +129,6 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
-
-                    b.HasIndex("DailyMenuID");
 
                     b.ToTable("Dishes");
                 });
@@ -180,6 +175,21 @@ namespace DAL.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Menu");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.Property<Guid>("DailyMenuID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MenuDishId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DailyMenuID", "MenuDishId");
+
+                    b.HasIndex("MenuDishId");
+
+                    b.ToTable("DishMenu");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -320,14 +330,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.AppUser", null)
                         .WithMany("Dishes")
                         .HasForeignKey("AppUserId");
-
-                    b.HasOne("DAL.Entities.Menu", "DailyMenu")
-                        .WithMany("MenuDish")
-                        .HasForeignKey("DailyMenuID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DailyMenu");
                 });
 
             modelBuilder.Entity("DAL.Entities.DishIngredient", b =>
@@ -347,6 +349,21 @@ namespace DAL.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Ingredients");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.HasOne("DAL.Entities.Menu", null)
+                        .WithMany()
+                        .HasForeignKey("DailyMenuID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Entities.Dish", null)
+                        .WithMany()
+                        .HasForeignKey("MenuDishId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -413,11 +430,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.Ingredient", b =>
                 {
                     b.Navigation("DishIngredient");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Menu", b =>
-                {
-                    b.Navigation("MenuDish");
                 });
 #pragma warning restore 612, 618
         }

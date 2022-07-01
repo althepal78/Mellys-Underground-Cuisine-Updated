@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class addedDishTypeString : Migration
+    public partial class AddedMenu : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -59,6 +59,17 @@ namespace DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Menu",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Menu", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,6 +189,7 @@ namespace DAL.Migrations
                     Price = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
                     DishType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDefaulting = table.Column<bool>(type: "bit", nullable: false),
+                    DailyMenuID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -189,6 +201,11 @@ namespace DAL.Migrations
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Dishes_Menu_DailyMenuID",
+                        column: x => x.DailyMenuID,
+                        principalTable: "Menu",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -263,6 +280,11 @@ namespace DAL.Migrations
                 name: "IX_Dishes_AppUserId",
                 table: "Dishes",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dishes_DailyMenuID",
+                table: "Dishes",
+                column: "DailyMenuID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -296,6 +318,9 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Menu");
         }
     }
 }
