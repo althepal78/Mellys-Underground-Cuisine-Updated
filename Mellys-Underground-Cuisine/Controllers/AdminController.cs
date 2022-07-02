@@ -309,23 +309,34 @@ namespace Mellys_Underground_Cuisine.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddQuantity(AddQuantityVM vm)
+        public async Task<IActionResult> CreateMenu([FromBody] DishVM vm)
         {
+            var exists = await _db.Dishes.Where(id => id.Id == vm.Id).FirstOrDefaultAsync();
+            if (exists is null) { return View(vm); }
 
-            return Ok();
+            exists.Quantity = vm.Quantity;
+
+            var InMenu = _db.Menu.Any(di => di.MenuDish.Any(d => d.Id == vm.Id));
             
-            //var exists = await _db.Dishes.Where(di => di.Id ).FirstOrDefaultAsync();
+            if (InMenu)
+            {
+                var isChecked = await _db.Menu.Where(di => di.MenuDish.Any(id => id.Id == exists.Id)).FirstOrDefaultAsync();
+                isChecked.IsChecked = true;
+                Console.WriteLine(isChecked.ToString());
+                _db.Menu.Update(isChecked);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
 
-            //if (exists is null)
-            //{
-            //    return View();
-            //}
+            Menu menu = new()
+            {
+                IsChecked = true
+            };
+            menu.MenuDish.Add(exists);
 
-            //exists.Quantity = quantity;
-            //_db.Dishes.Update(exists);
-            //await _db.SaveChangesAsync();
-            //return RedirectToAction(nameof(CreateMenu));
-
+            await _db.Menu.AddAsync(menu);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
 
     }

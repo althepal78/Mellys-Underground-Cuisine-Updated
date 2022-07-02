@@ -3,6 +3,6 @@
     public class AddQuantityVM
     {
         public string Id { get; set; }
-        public int  Quantity { get; set; }
+        public string  Quantity { get; set; }
     }
 }

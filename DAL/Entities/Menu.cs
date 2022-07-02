@@ -8,5 +8,7 @@ namespace DAL.Entities
         public Guid ID { get; set; }
 
         public List<Dish>? MenuDish { get; set; }
+
+        public bool IsChecked { get; set; } = false;
     }
 }

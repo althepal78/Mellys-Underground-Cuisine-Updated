@@ -4,6 +4,7 @@ using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220702180938_AddingBoolToMenuIsChecked")]
+    partial class AddingBoolToMenuIsChecked
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,9 +117,6 @@ namespace DAL.Migrations
                     b.Property<bool>("IsDefaulting")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("MenuID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -132,8 +131,6 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
-
-                    b.HasIndex("MenuID");
 
                     b.ToTable("Dishes");
                 });
@@ -183,6 +180,21 @@ namespace DAL.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Menu");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.Property<Guid>("DailyMenuID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MenuDishId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DailyMenuID", "MenuDishId");
+
+                    b.HasIndex("MenuDishId");
+
+                    b.ToTable("DishMenu");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -323,10 +335,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.AppUser", null)
                         .WithMany("Dishes")
                         .HasForeignKey("AppUserId");
-
-                    b.HasOne("DAL.Entities.Menu", null)
-                        .WithMany("MenuDish")
-                        .HasForeignKey("MenuID");
                 });
 
             modelBuilder.Entity("DAL.Entities.DishIngredient", b =>
@@ -346,6 +354,21 @@ namespace DAL.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Ingredients");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.HasOne("DAL.Entities.Menu", null)
+                        .WithMany()
+                        .HasForeignKey("DailyMenuID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Entities.Dish", null)
+                        .WithMany()
+                        .HasForeignKey("MenuDishId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -412,11 +435,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.Ingredient", b =>
                 {
                     b.Navigation("DishIngredient");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Menu", b =>
-                {
-                    b.Navigation("MenuDish");
                 });
 #pragma warning restore 612, 618
         }
