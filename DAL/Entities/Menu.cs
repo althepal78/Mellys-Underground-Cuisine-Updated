@@ -7,8 +7,10 @@ namespace DAL.Entities
         [Key]
         public Guid ID { get; set; }
 
-        public List<Dish>? MenuDish { get; set; }
-
         public bool IsChecked { get; set; } = false;
-    }
+
+        public DateTime DateColumn { get; set; }
+
+        public ICollection<MenuDish>? MenuDish { get; set; }
+     }
 }

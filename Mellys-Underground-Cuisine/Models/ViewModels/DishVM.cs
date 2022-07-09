@@ -27,6 +27,10 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         [Required]
         public decimal Price { get; set; }
 
+        public ICollection<DishIngredient>? DishIngredient { get; set; }
+        public ICollection<MenuDish>? MenuDish { get; set; }
+        public DateTime date { get; set; }
+
         public string? FilePath { get; set; }
 
         [NotMapped]

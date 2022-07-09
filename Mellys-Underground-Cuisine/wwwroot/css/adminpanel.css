@@ -15,19 +15,20 @@ img {
 }
 
 table {
-  border: 4px solid #ff9ff6 !important;
+  border: 0.3rem solid #ff9ff6 !important;
   color: #fff !important;
 }
 table th {
+  border: 0.1rem solid #ff9ff6;
   text-align: center;
 }
 table td {
-  border: 2px solid #ff9ff6;
+  border: 0.1rem solid #ff9ff6;
   border-inline-color: #ff9ff6;
   border-block-color: #ff9ff6;
 }
 table tr {
-  border: 2px solid #ff9ff6;
+  border: 0.1rem solid #ff9ff6;
   border-inline-color: #ff9ff6;
   border-block-color: #ff9ff6;
 }
@@ -60,7 +61,7 @@ nav ul li a {
   font-family: "montserrat";
   text-decoration: none;
   text-transform: uppercase;
-  font-size: 17px;
+  font-size: 1rem;
   color: #fff;
   position: relative;
   padding: 0.938rem 0px 0.938rem 1.563rem;
@@ -85,4 +86,9 @@ nav ul li a:hover {
 
 nav ul li a:hover:before {
   width: 95%;
+}
+
+.directions {
+  background-color: #000;
+  color: #fff;
 }

@@ -139,7 +139,6 @@ namespace Mellys_Underground_Cuisine.Controllers
         {
             Ingredient ingredient = new();
 
-
             var trimName = vm.Name.Replace(",", "").Trim();
             var normalizeTrimName = trimName.ToUpper();
             var exists = await _db.Ingredients.FirstOrDefaultAsync(ing => ing.NormalizeName == normalizeTrimName);
@@ -298,44 +297,63 @@ namespace Mellys_Underground_Cuisine.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public IActionResult CreateMenu()
         {
-            var dishlist = new MenuVM
-            {
-                DishList = _db.Dishes.ToList()
-            };
 
-            return View(dishlist);
+            MenuVM MenuDishList = new MenuVM();
+
+            MenuDishList.dishes = _db.Dishes.ToList();
+
+            return View(MenuDishList);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateMenu([FromBody] DishVM vm)
         {
-            var exists = await _db.Dishes.Where(id => id.Id == vm.Id).FirstOrDefaultAsync();
-            if (exists is null) { return View(vm); }
+            MenuDish menuDish = new MenuDish();
 
-            exists.Quantity = vm.Quantity;
-
-            var InMenu = _db.Menu.Any(di => di.MenuDish.Any(d => d.Id == vm.Id));
-            
-            if (InMenu)
+            var dishExists = await _db.Dishes.Where(id => id.Id == vm.Id).FirstOrDefaultAsync();
+            if (dishExists is null)
             {
-                var isChecked = await _db.Menu.Where(di => di.MenuDish.Any(id => id.Id == exists.Id)).FirstOrDefaultAsync();
-                isChecked.IsChecked = true;
-                Console.WriteLine(isChecked.ToString());
-                _db.Menu.Update(isChecked);
-                await _db.SaveChangesAsync();
-                return Ok();
+                ModelState.AddModelError("dishError", "This dish does not exists");
+                return View(vm);
             }
 
-            Menu menu = new()
-            {
-                IsChecked = true
-            };
-            menu.MenuDish.Add(exists);
-
-            await _db.Menu.AddAsync(menu);
+            dishExists.Quantity = vm.Quantity;
+            dishExists.date = vm.date;
+            _db.Dishes.Update(dishExists);
             await _db.SaveChangesAsync();
+
+            var mExists = await _db.Menu.Where(d => d.DateColumn == vm.date).FirstOrDefaultAsync();
+
+            if (mExists is null)
+            {
+                Menu newMenu = new Menu()
+                {
+                    DateColumn = vm.date,
+                };
+                await _db.Menu.AddAsync(newMenu);
+                await _db.SaveChangesAsync();
+
+                menuDish.Dish = dishExists;
+                menuDish.DishId = dishExists.Id;
+                menuDish.MenuId = newMenu.ID;
+                menuDish.Menu = newMenu;
+
+                await _db.menuDishes.AddAsync(menuDish);
+                await _db.SaveChangesAsync();
+            }
+            else
+            {
+                menuDish.Dish = dishExists;
+                menuDish.DishId = dishExists.Id;
+                menuDish.Menu = mExists;
+                menuDish.MenuId = mExists.ID;
+                _db.menuDishes.Update(menuDish);
+                await _db.SaveChangesAsync();
+            }
+
             return Ok();
         }
 

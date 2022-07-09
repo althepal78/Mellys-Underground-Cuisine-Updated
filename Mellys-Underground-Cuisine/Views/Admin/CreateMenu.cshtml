@@ -1,36 +1,55 @@
 ﻿@model Mellys_Underground_Cuisine.Models.ViewModels.MenuVM
 
 <h1>Create Your Menu</h1>
-
-<div class="m-1">
-
+<h3>What day is this Menu being created for <input asp-for="DateColumn" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></h3>
+<h5 class="directions">
+    Remember if you have not created the dish yet, it will not be in the database, so please create the dish first. Then you will
+    be able to click on it. If you change the date in the middle of making your dish all checks will be cleared and you will
+    start a new menu.
+</h5>
+<div class="d-flex m-1">
     @if (Model is null)
     {
         <p> Nothing here to see</p>
     }
     else
     {
-        foreach (var item in @Model.DishList)
+        if (Model.dishes is null)
         {
-            <div class="card bg-black text-white m-1" style="max-width: 18rem;">
-
-                <div class="card-header text-white">
-                    @item.Name
-                    <form>
+            <h1>Nothing to show at this time</h1>
+        }
+        else
+        {
+            foreach (var item in @Model.dishes)
+            {
+                <div class="card bg-black text-white m-1" style="max-width: 18rem;">
+                    <div asp-validation-summary="All"></div>
+                    <div class="card-header text-white">
+                        @item.Name
                         <input type="checkbox" id="@item.Id" class="cb text-white" />
-                    </form>
+                    </div>
+                    <img class="card-img-top" src="@item.FilePath" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text">@item.Information </p>
+                    </div>
                 </div>
-                <img class="card-img-top" src="@item.FilePath" alt="Card image cap">
-                <div class="card-body">
-                    <p class="card-text">@item.Information </p>
-                </div>
-            </div>
+            }
         }
     }
 </div>
 <script>
     let quantity;
     let checkboxElems = document.querySelectorAll("input[type='checkbox']");
+    const dateControl = document.querySelector('input[type="date"]');
+
+    dateControl.addEventListener("change", clearAll);
+
+
+    function clearAll() {
+        for (let i = 0; i < checkboxElems.length; i++) {
+            checkboxElems[i].checked = false;
+        }
+    }
 
     for (let i = 0; i < checkboxElems.length; i++) {
         checkboxElems[i].addEventListener("click", function(e) {
@@ -43,7 +62,10 @@
 
             let input = prompt("How many servings per dish do you required? Please put answer in whole numbers etg(45)");
             quantity = parseInt(input);
-
+            if (input === null) {
+                e.target.checked = false;
+                return;
+            }
             while (isNaN(quantity)) {
                 input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
                 quantity = parseInt(input);
@@ -52,21 +74,20 @@
                     return;
                 }
             }
-
-            const data = {
+            console.log(dateControl.value)
+            const vm = {
                 Id: id.toString(),
-                Quantity: quantity.toString()
+                Quantity: quantity.toString(),
+                Date: dateControl.value.toString()
             }
-            const url = "/Admin/CreateMenu";
+
+            const url = "/Admin/CreateMenu/";
+
             fetch(url, {
-                method: "POST", 
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data),
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vm),
             })
-
-           
-
-            console.log(data);
         }
 
     }

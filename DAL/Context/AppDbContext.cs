@@ -12,12 +12,14 @@ namespace DAL.Context
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<DishIngredient> _dishIngredients { get; set; }
         public DbSet<Menu> Menu { get; set; }
+        public DbSet<MenuDish> menuDishes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
             base.OnModelCreating(builder);
 
+            // setting up the dish and ingredient table _dishIngredient
             builder.Entity<DishIngredient>().HasKey(di => new { di.DishId, di.IngredientsId });
 
             builder.Entity<DishIngredient>()
@@ -30,6 +32,18 @@ namespace DAL.Context
                 .WithMany(i => i.DishIngredient).HasForeignKey(fk => fk.DishId);
 
 
+            //setting up the Menu and dish table MenuDish
+            builder.Entity<MenuDish>().HasKey(di => new { di.DishId, di.MenuId });
+
+            builder.Entity<MenuDish>()
+                .HasOne(i => i.Menu)
+                .WithMany(i => i.MenuDish).HasForeignKey(fk => fk.MenuId);
+
+            builder.Entity<MenuDish>()
+                .HasOne(d => d.Dish)
+                .WithMany(i => i.MenuDish).HasForeignKey(fk => fk.DishId);
+
+            //fixing entities so they won't be maxed
             builder.Entity<AppUser>(u =>
             {
                 u.Property(user => user.PhoneNumber)

@@ -19,7 +19,7 @@ namespace DAL.Entities
         public string Information { get; set; }
 
         public ICollection<DishIngredient> DishIngredient { get; set; }
-
+        public ICollection<MenuDish> MenuDish { get; set; }
         public int Quantity { get; set; }
 
         [Required]
@@ -29,8 +29,10 @@ namespace DAL.Entities
 
         [Required]
         public string DishType { get; set; }
-
+             
         public bool IsDefaulting { get; set; } = false;
         public string? FilePath { get; set; }
+
+        public DateTime date { get; set; }
     }
 }
