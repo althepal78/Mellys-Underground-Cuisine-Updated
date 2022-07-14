@@ -14,6 +14,7 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         public Guid ID { get; set; }
         public Guid DishId { get; set; }
        
+        public int Servings{ get; set; }
         public List<Menu>? Menu { get; set; }
     }
 }

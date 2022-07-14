@@ -12,7 +12,7 @@ namespace DAL.Context
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<DishIngredient> _dishIngredients { get; set; }
         public DbSet<Menu> Menu { get; set; }
-        public DbSet<MenuDish> menuDishes { get; set; }
+        public DbSet<MenuDish> MenuDishes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

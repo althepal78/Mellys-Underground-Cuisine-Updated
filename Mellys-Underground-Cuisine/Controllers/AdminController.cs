@@ -49,7 +49,8 @@ namespace Mellys_Underground_Cuisine.Controllers
             if (_db.Dishes.ToList() != null)
             {
                 List<Dish> exists = _db.Dishes
-                     .Include(di => di.DishIngredient)
+                     .Include(md => md.MenuDish)
+                     .Include(di => di.DishIngredient)                     
                      .ThenInclude(ing => ing.Ingredients).ToList();
 
                 return View(exists);
@@ -309,52 +310,63 @@ namespace Mellys_Underground_Cuisine.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMenu([FromBody] DishVM vm)
+        public async Task<IActionResult> CreateMenu([FromBody] MenuVM vm)
         {
-            MenuDish menuDish = new MenuDish();
 
-            var dishExists = await _db.Dishes.Where(id => id.Id == vm.Id).FirstOrDefaultAsync();
+            Console.WriteLine(vm.DateColumn.GetType() + " the Type of vm.DateColumn and what the date looks like: "+ vm.DateColumn);
+            var dishExists = await _db.Dishes.Where(id => id.Id == vm.DishId).FirstOrDefaultAsync();
             if (dishExists is null)
             {
                 ModelState.AddModelError("dishError", "This dish does not exists");
                 return View(vm);
             }
 
-            dishExists.Quantity = vm.Quantity;
-            dishExists.date = vm.date;
-            _db.Dishes.Update(dishExists);
-            await _db.SaveChangesAsync();
-
-            var mExists = await _db.Menu.Where(d => d.DateColumn == vm.date).FirstOrDefaultAsync();
-
+            var mExists = await _db.Menu.Where(d => d.DateColumn == vm.DateColumn).FirstOrDefaultAsync();
+            Menu newMenu = new Menu();
+                       
             if (mExists is null)
             {
-                Menu newMenu = new Menu()
-                {
-                    DateColumn = vm.date,
-                };
+                newMenu.DateColumn = vm.DateColumn;
+                newMenu.IsChecked = true;
+               
                 await _db.Menu.AddAsync(newMenu);
-                await _db.SaveChangesAsync();
-
-                menuDish.Dish = dishExists;
-                menuDish.DishId = dishExists.Id;
-                menuDish.MenuId = newMenu.ID;
-                menuDish.Menu = newMenu;
-
-                await _db.menuDishes.AddAsync(menuDish);
                 await _db.SaveChangesAsync();
             }
             else
             {
-                menuDish.Dish = dishExists;
-                menuDish.DishId = dishExists.Id;
-                menuDish.Menu = mExists;
-                menuDish.MenuId = mExists.ID;
-                _db.menuDishes.Update(menuDish);
+                newMenu = mExists;
+                newMenu.IsChecked = true;
+                newMenu.DateColumn = vm.DateColumn;
+
+                _db.Menu.Update(newMenu);
                 await _db.SaveChangesAsync();
             }
 
+            MenuDish md = new MenuDish
+            {
+                MenuId = newMenu.ID,
+                DishId = dishExists.Id,
+                Servings = vm.Servings,               
+            };
+           
+            await _db.MenuDishes.AddAsync(md);
+            await _db.SaveChangesAsync();
+
+            
+            _db.Dishes.Update(dishExists);
+
+
+            await _db.SaveChangesAsync();
             return Ok();
+        }
+
+        public IActionResult ViewMenus()
+        {
+            var menus = _db.Menu.Include(s => s.MenuDish)
+                            .ThenInclude(d => d.Dish)                         
+                            .ToList();
+
+            return View(menus);
         }
 
     }

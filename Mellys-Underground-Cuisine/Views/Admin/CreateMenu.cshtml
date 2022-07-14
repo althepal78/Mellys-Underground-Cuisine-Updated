@@ -38,26 +38,18 @@
     }
 </div>
 <script>
-    let quantity;
+    let quantity = 0;
     let checkboxElems = document.querySelectorAll("input[type='checkbox']");
     const dateControl = document.querySelector('input[type="date"]');
 
-    dateControl.addEventListener("change", clearAll);
-
-
-    function clearAll() {
-        for (let i = 0; i < checkboxElems.length; i++) {
-            checkboxElems[i].checked = false;
-        }
-    }
 
     for (let i = 0; i < checkboxElems.length; i++) {
-        checkboxElems[i].addEventListener("click", function(e) {
+        checkboxElems[i].addEventListener("click", (e) =>{
             displayCheck(e, checkboxElems[i].id);
         })
     }
 
-    function displayCheck(e, id) {
+    async function displayCheck(e, id) {
         if (e.target.checked) {
 
             let input = prompt("How many servings per dish do you required? Please put answer in whole numbers etg(45)");
@@ -74,20 +66,23 @@
                     return;
                 }
             }
-            console.log(dateControl.value)
-            const vm = {
-                Id: id.toString(),
-                Quantity: quantity.toString(),
-                Date: dateControl.value.toString()
+            const url = "/Admin/CreateMenu";
+            //console.log(dateControl.value)
+            const data = {
+                DishId: id.toString(),
+                Servings: quantity.toString(),                
+                DateColumn: dateControl.value.toString()
             }
-
-            const url = "/Admin/CreateMenu/";
-
-            fetch(url, {
+            const options =
+            {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(vm),
-            })
+                body: JSON.stringify(data),
+            }
+
+            const response = await fetch(url, options);
+            console.log(response.status);
+
         }
 
     }

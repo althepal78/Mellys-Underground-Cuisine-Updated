@@ -22,7 +22,7 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         [Required]
         public string DishType { get; set; }
 
-        public int Quantity { get; set; }
+        public int Servings { get; set; }
 
         [Required]
         public decimal Price { get; set; }

@@ -1,7 +1,10 @@
-﻿namespace DAL.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DAL.Entities
 {
     public class Ingredient
     {
+        [Key]
         public Guid ID { get; set; }
 
         public string Name { get; set; }

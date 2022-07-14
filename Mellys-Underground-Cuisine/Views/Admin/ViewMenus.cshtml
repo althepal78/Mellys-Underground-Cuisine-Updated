@@ -1,0 +1,56 @@
+﻿@using DAL.Entities
+@model List<Menu>
+@{
+    ViewData["Title"] = "ViewMenus";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+<h1>ViewMenus</h1>
+@if (Model is not null)
+{
+    <div class="container-fluid mt-1 p-0">
+        <div class="row justify-content-center m-0 p-0">
+            <div class="col-8 col-lg-8">
+                @foreach (var item in @Model)
+                {
+                    @if (item.MenuDish is not null)
+                    {
+                        <table class="table bg-black">
+                            <thead class="">
+                                <tr>
+                                    <th colspan="5"><h5>Menu for  @item.DateColumn.ToString("MMM dd yyyy") </h5></th>
+                                </tr>
+                                
+                                <tr>
+                                    <th style="width: 40rem;">Dish Name</th>
+                                    <th >Dish Price</th>
+                                    <th >Servings</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            @foreach (var i in item.MenuDish)
+                            {
+                                    <tr>
+                                        <td align="left" >@i.Dish.Name</td>
+                                        <td align="center" >$@i.Dish.Price</td>
+                                        <td align="center" >@i.Servings</td>
+                                        <td><a asp-action="DeleteDishInMenu"><span class="text-danger">Delete X</span></a> 
+                                            <br /> 
+                                            <a asp-action="EditDish" asp-route-id="@i.DishId"><span class="text-warning">Edit</span></a> 
+                                        </td>
+                                    </tr>
+                            }
+
+                            </tbody>
+                        </table>
+
+                    }
+
+
+                }
+
+            </div>
+        </div>
+    </div>
+}
