@@ -5,16 +5,13 @@
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
 }
 
-<script defer>
-
-</script>
 <h1 class="text-center">View The Menus</h1>
 @if (Model is not null)
 {
     <div class="container-fluid mt-1 p-0">
         <div class="row justify-content-center m-0 p-0">
             <div class="col-8 col-lg-8">
-                @if (@Model.Menu != null)
+                @if (@Model.Menu is not null)
                 {
                     @foreach (var item in @Model.Menu)
                     {
@@ -43,9 +40,9 @@
                                             <td align="center">@i.Servings</td>
                                             <td>
                                                 <a asp-action="DeleteDishInMenu"
-                                                   asp-route-dateColumn="@item.DateColumn"
-                                                   asp-route-did="@i.DishId"
-                                                   asp-route-mid="@i.MenuId">
+                               asp-route-dateColumn="@item.DateColumn"
+                               asp-route-did="@i.DishId"
+                               asp-route-mid="@i.MenuId">
                                                     <span class="text-danger">Delete X</span>
                                                 </a>
                                                 <br />
@@ -81,7 +78,7 @@
     async function Servings(el) {
 
         const children = Array.from(el.children);
-        
+
         let input = prompt("How many servings do you have in whole numbers etc.. (34)");
         serv = parseInt(input);
         if (input === null) {
@@ -95,14 +92,13 @@
                 return;
             }
         }
-
         // the url for back end to get too
         const url = "/Admin/EditServings";
-        console.log("Date: ", el.id, ", MenuID: ", children[0].id, ", DishId: ", children[0].id )
+        console.log("Date: ", el.id, ", MenuID: ", children[0].id, ", DishId: ", children[0].id)
         // the data needed to pass
         const data = {
             DateColumn: el.id.toString(),
-            ID: children[0].id.toString(),
+            //ID: children[0].id.toString(),
             DishId: children[1].id.toString(),
             Servings: serv.toString()
         }

@@ -8,18 +8,10 @@
     start a new menu.
 </h5>
 <div class="d-flex m-1">
-    @if (Model is null)
+    @if (Model is not null)    
     {
-        <p> Nothing here to see</p>
-    }
-    else
-    {
-        if (Model.dishes is null)
-        {
-            <h1>Nothing to show at this time</h1>
-        }
-        else
-        {
+        if (Model.dishes is not null)
+        {    
             foreach (var item in @Model.dishes)
             {
                 <div class="card bg-black text-white m-1" style="max-width: 18rem;">
@@ -37,6 +29,8 @@
         }
     }
 </div>
+
+
 <script>
     let servings = 0;
     let checkboxElems = document.querySelectorAll("input[type='checkbox']");

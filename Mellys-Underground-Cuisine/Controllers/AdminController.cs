@@ -361,24 +361,27 @@ namespace Mellys_Underground_Cuisine.Controllers
 
         public IActionResult ViewMenus()
         {
-            
+
             var menus = _db.Menu.OrderBy(d => d.DateColumn).Include(s => s.MenuDish)
                             .ThenInclude(d => d.Dish)
                             .ToList();
-           
-            if(menus is null)
+
+            if (menus is null)
             {
                 return BadRequest();
             }
 
-            return View(menus);
+            MenuVM newVM = new MenuVM();
+            newVM.Menu = menus;
+
+            return View(newVM);
         }
 
 
         public IActionResult DeleteDishInMenu(DateTime dateColumn, Guid did, Guid mid)
         {
-            var deleteIt =  _db.MenuDishes.Where(i => i.MenuId == mid && i.DishId == did && i.Menu.DateColumn == dateColumn).FirstOrDefault();
-                  
+            var deleteIt = _db.MenuDishes.Where(i => i.MenuId == mid && i.DishId == did && i.Menu.DateColumn == dateColumn).FirstOrDefault();
+
             if (deleteIt is null)
             {
                 return NotFound();
@@ -386,33 +389,31 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             _db.MenuDishes.Remove(deleteIt);
             _db.SaveChanges();
-           
+
             return RedirectToAction(nameof(ViewMenus));
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> EditServings([FromBody] MenuVM vm)    
+        public async Task<IActionResult> EditServings([FromBody] MenuVM vm)
         {
+            var dishServings = _db.MenuDishes
+                .Where(i => i.MenuId == vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
+                .FirstOrDefault();
 
-            var list = await _db.Menu.ToListAsync();
-            //var dishServings = _db.MenuDishes
-            //    .Where(i => i.MenuId == vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
-            //    .FirstOrDefault();
+            if (dishServings is null)
+            {
+                return NotFound();
+            }
 
-            //if(dishServings is null)
-            //{
-            //    return NotFound();
-            //}
+            dishServings.Servings = vm.Servings;
 
-            //dishServings.Servings = vm.Servings;
+            Console.WriteLine("did we get here");
+            //I need to make a javascript call  to here so I can get what I want from this 
 
-            //Console.WriteLine("did we get here");
-            ////I need to make a javascript call  to here so I can get what I want from this 
-
-            //_db.MenuDishes.Update(dishServings);
-            //_db.SaveChanges();
-            return  RedirectToAction(nameof(ViewMenus));
+            _db.MenuDishes.Update(dishServings);
+            _db.SaveChanges();
+            return RedirectToAction(nameof(ViewMenus));
         }
     }
 
