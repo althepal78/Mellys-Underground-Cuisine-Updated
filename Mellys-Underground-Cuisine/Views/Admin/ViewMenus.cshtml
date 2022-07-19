@@ -1,56 +1,121 @@
-﻿@using DAL.Entities
-@model List<Menu>
+﻿@model Mellys_Underground_Cuisine.Models.ViewModels.MenuVM
+
 @{
     ViewData["Title"] = "ViewMenus";
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
 }
-<h1>ViewMenus</h1>
+
+<script defer>
+
+</script>
+<h1 class="text-center">View The Menus</h1>
 @if (Model is not null)
 {
     <div class="container-fluid mt-1 p-0">
         <div class="row justify-content-center m-0 p-0">
             <div class="col-8 col-lg-8">
-                @foreach (var item in @Model)
+                @if (@Model.Menu != null)
                 {
-                    @if (item.MenuDish is not null)
+                    @foreach (var item in @Model.Menu)
                     {
-                        <table class="table bg-black">
-                            <thead class="">
-                                <tr>
-                                    <th colspan="5"><h5>Menu for  @item.DateColumn.ToString("MMM dd yyyy") </h5></th>
-                                </tr>
-                                
-                                <tr>
-                                    <th style="width: 40rem;">Dish Name</th>
-                                    <th >Dish Price</th>
-                                    <th >Servings</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            @foreach (var i in item.MenuDish)
-                            {
+                        @if (item.MenuDish is not null)
+                        {
+                            <table class="table bg-black">
+                                <thead class="">
                                     <tr>
-                                        <td align="left" >@i.Dish.Name</td>
-                                        <td align="center" >$@i.Dish.Price</td>
-                                        <td align="center" >@i.Servings</td>
-                                        <td><a asp-action="DeleteDishInMenu"><span class="text-danger">Delete X</span></a> 
-                                            <br /> 
-                                            <a asp-action="EditDish" asp-route-id="@i.DishId"><span class="text-warning">Edit</span></a> 
-                                        </td>
+                                        <th colspan="5"><h5>Menu for  @item.DateColumn.ToString("MMM dd yyyy") </h5></th>
                                     </tr>
-                            }
 
-                            </tbody>
-                        </table>
+                                    <tr>
+                                        <th style="width: 40rem;">Dish Name</th>
+                                        <th>Dish Price</th>
+                                        <th>Servings</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var i in item.MenuDish)
+                                    {
+                                        <tr>
+                                            <td align="left">@i.Dish.Name</td>
+                                            <td align="center">$@i.Dish.Price.ToString("0.00")</td>
+                                            <td align="center">@i.Servings</td>
+                                            <td>
+                                                <a asp-action="DeleteDishInMenu"
+                                                   asp-route-dateColumn="@item.DateColumn"
+                                                   asp-route-did="@i.DishId"
+                                                   asp-route-mid="@i.MenuId">
+                                                    <span class="text-danger">Delete X</span>
+                                                </a>
+                                                <br />
+                                                <a href="#" class="change" id="@item.DateColumn">
+                                                    <input hidden id="@i.MenuId" />
+                                                    <input hidden id="@i.DishId" />
+                                                    <span class="EditServings text-warning">Change Servings</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
 
                     }
-
-
                 }
-
             </div>
         </div>
     </div>
 }
+
+<script>
+    const ch = document.querySelectorAll(".change");
+    let serv = 0;
+
+    ch.forEach((el) => {
+        el.addEventListener("click", (e) => {
+            Servings(el);
+        })
+    });
+
+    async function Servings(el) {
+
+        const children = Array.from(el.children);
+        
+        let input = prompt("How many servings do you have in whole numbers etc.. (34)");
+        serv = parseInt(input);
+        if (input === null) {
+            return;
+        }
+        while (isNaN(serv)) {
+            input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
+            serv = parseInt(input);
+            if (input === null) {
+
+                return;
+            }
+        }
+
+        // the url for back end to get too
+        const url = "/Admin/EditServings";
+        console.log("Date: ", el.id, ", MenuID: ", children[0].id, ", DishId: ", children[0].id )
+        // the data needed to pass
+        const data = {
+            DateColumn: el.id.toString(),
+            ID: children[0].id.toString(),
+            DishId: children[1].id.toString(),
+            Servings: serv.toString()
+        }
+
+        // the options for the fetch method we will be uing
+        const options =
+        {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        }
+
+        // fetch section
+        fetch(url, options);
+    }
+</script>

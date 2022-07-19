@@ -30,7 +30,7 @@
                     </div>
                     <img class="card-img-top" src="@item.FilePath" alt="Card image cap">
                     <div class="card-body">
-                        <p class="card-text">@item.Information </p>
+                        <p class="card-text">@item.Description </p>
                     </div>
                 </div>
             }
@@ -38,29 +38,28 @@
     }
 </div>
 <script>
-    let quantity = 0;
+    let servings = 0;
     let checkboxElems = document.querySelectorAll("input[type='checkbox']");
     const dateControl = document.querySelector('input[type="date"]');
 
-
-    for (let i = 0; i < checkboxElems.length; i++) {
-        checkboxElems[i].addEventListener("click", (e) =>{
-            displayCheck(e, checkboxElems[i].id);
+    checkboxElems.forEach((el, i) => {
+        el.addEventListener("click", (e) => {
+            displayCheck(e, el.id)
         })
-    }
+    })
 
     async function displayCheck(e, id) {
         if (e.target.checked) {
 
             let input = prompt("How many servings per dish do you required? Please put answer in whole numbers etg(45)");
-            quantity = parseInt(input);
+            servings = parseInt(input);
             if (input === null) {
                 e.target.checked = false;
                 return;
             }
-            while (isNaN(quantity)) {
+            while (isNaN(servings)) {
                 input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
-                quantity = parseInt(input);
+                servings = parseInt(input);
                 if (input === null) {
                     e.target.checked = false;
                     return;
@@ -70,7 +69,7 @@
             //console.log(dateControl.value)
             const data = {
                 DishId: id.toString(),
-                Servings: quantity.toString(),                
+                Servings: servings.toString(),
                 DateColumn: dateControl.value.toString()
             }
             const options =

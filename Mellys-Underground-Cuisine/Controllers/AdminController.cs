@@ -50,7 +50,7 @@ namespace Mellys_Underground_Cuisine.Controllers
             {
                 List<Dish> exists = _db.Dishes
                      .Include(md => md.MenuDish)
-                     .Include(di => di.DishIngredient)                     
+                     .Include(di => di.DishIngredient)
                      .ThenInclude(ing => ing.Ingredients).ToList();
 
                 return View(exists);
@@ -305,7 +305,6 @@ namespace Mellys_Underground_Cuisine.Controllers
             MenuVM MenuDishList = new MenuVM();
 
             MenuDishList.dishes = _db.Dishes.ToList();
-
             return View(MenuDishList);
         }
 
@@ -313,7 +312,7 @@ namespace Mellys_Underground_Cuisine.Controllers
         public async Task<IActionResult> CreateMenu([FromBody] MenuVM vm)
         {
 
-            Console.WriteLine(vm.DateColumn.GetType() + " the Type of vm.DateColumn and what the date looks like: "+ vm.DateColumn);
+            Console.WriteLine(vm.DateColumn.GetType() + " the Type of vm.DateColumn and what the date looks like: " + vm.DateColumn);
             var dishExists = await _db.Dishes.Where(id => id.Id == vm.DishId).FirstOrDefaultAsync();
             if (dishExists is null)
             {
@@ -323,12 +322,12 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             var mExists = await _db.Menu.Where(d => d.DateColumn == vm.DateColumn).FirstOrDefaultAsync();
             Menu newMenu = new Menu();
-                       
+
             if (mExists is null)
             {
                 newMenu.DateColumn = vm.DateColumn;
                 newMenu.IsChecked = true;
-               
+
                 await _db.Menu.AddAsync(newMenu);
                 await _db.SaveChangesAsync();
             }
@@ -346,13 +345,13 @@ namespace Mellys_Underground_Cuisine.Controllers
             {
                 MenuId = newMenu.ID,
                 DishId = dishExists.Id,
-                Servings = vm.Servings,               
+                Servings = vm.Servings,
             };
-           
+
             await _db.MenuDishes.AddAsync(md);
             await _db.SaveChangesAsync();
 
-            
+
             _db.Dishes.Update(dishExists);
 
 
@@ -362,13 +361,59 @@ namespace Mellys_Underground_Cuisine.Controllers
 
         public IActionResult ViewMenus()
         {
-            var menus = _db.Menu.Include(s => s.MenuDish)
-                            .ThenInclude(d => d.Dish)                         
+            
+            var menus = _db.Menu.OrderBy(d => d.DateColumn).Include(s => s.MenuDish)
+                            .ThenInclude(d => d.Dish)
                             .ToList();
+           
+            if(menus is null)
+            {
+                return BadRequest();
+            }
 
             return View(menus);
         }
 
+
+        public IActionResult DeleteDishInMenu(DateTime dateColumn, Guid did, Guid mid)
+        {
+            var deleteIt =  _db.MenuDishes.Where(i => i.MenuId == mid && i.DishId == did && i.Menu.DateColumn == dateColumn).FirstOrDefault();
+                  
+            if (deleteIt is null)
+            {
+                return NotFound();
+            }
+
+            _db.MenuDishes.Remove(deleteIt);
+            _db.SaveChanges();
+           
+            return RedirectToAction(nameof(ViewMenus));
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditServings([FromBody] MenuVM vm)    
+        {
+
+            var list = await _db.Menu.ToListAsync();
+            //var dishServings = _db.MenuDishes
+            //    .Where(i => i.MenuId == vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
+            //    .FirstOrDefault();
+
+            //if(dishServings is null)
+            //{
+            //    return NotFound();
+            //}
+
+            //dishServings.Servings = vm.Servings;
+
+            //Console.WriteLine("did we get here");
+            ////I need to make a javascript call  to here so I can get what I want from this 
+
+            //_db.MenuDishes.Update(dishServings);
+            //_db.SaveChanges();
+            return  RedirectToAction(nameof(ViewMenus));
+        }
     }
 
 }

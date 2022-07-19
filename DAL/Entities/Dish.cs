@@ -16,11 +16,11 @@ namespace DAL.Entities
         [StringLength(100)]
         public string Name { get; set; }
 
-        //Information about the dis
+        //Information about the dish to tell how 
         [Required]
         [StringLength(500)]
         [MinLength(45)]
-        public string Information { get; set; }
+        public string Description { get; set; }
 
         //This collection of dish ingredients is so we can reference the ingredient knowing that it haves a 
         //connection to the ingredient
@@ -31,8 +31,8 @@ namespace DAL.Entities
         
         //price for the dish itself
         [Required]
+        [Column(TypeName = "smallmoney")]
         [DataType(DataType.Currency)]
-        [Column(TypeName = "decimal(5, 2)")]
         public decimal Price { get; set; }
 
         //This for categorizing each dish. So dessert is something sweet, food an actual meal, appetizer = snack, and 

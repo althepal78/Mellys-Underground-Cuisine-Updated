@@ -4,13 +4,12 @@
 <div class="container-fluid mt-1 p-0">
     <div class="row justify-content-center m-0 p-0">
         <div class="col-12 col-lg-12">
-            <table class="table bg-black">
-                <thead class="">
+            <table  class="table bg-black w-75">
+                <thead >
                     <tr>
                         <th>Image</th>
                         <th>Name</th>
                         <th>Ingredients</th>
-                        <th>Dish Information</th>
                         <th>Dish Price</th>
                         <th> Actions</th>
                     </tr>
@@ -22,24 +21,23 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td class="img-thumbnail border-0"><img src="@item.FilePath" /></td>
-                                <td>@item.Name</td>
+                                <td  align="center" class="img-thumbnail border-0 w-25"><img src="@item.FilePath" /></td>
+                                <td style="width: 12rem;">@item.Name</td>
                                 @if (item.DishIngredient != null)
                                 {
-                                    <td>
+                                    <td style="width: 15rem;">
                                         @foreach (var ing in item.DishIngredient)
-                                        {                                     
+                                        {
                                             <span class="badge bg-black small text-secondary m-1">
                                                 @ing.Ingredients.Name <span class="badge bg-black small text-secondary">
-                                                    <a class="text-white"  asp-action="DeleteIngredient"
-                                                                           asp-controller="Admin"
-                                                                           asp-route-dishID="@item.Id"
-                                                                           asp-route-ingID="@ing.IngredientsId">
+                                                    <a class="text-white" asp-action="DeleteIngredient"
+                                       asp-controller="Admin"
+                                       asp-route-dishID="@item.Id"
+                                       asp-route-ingID="@ing.IngredientsId">
                                                         X
                                                     </a>
                                                 </span>
                                             </span>
-
                                         }
                                     </td>
                                 }
@@ -47,9 +45,9 @@
                                 {
                                     <td>No Ingredients yet</td>
                                 }
-                                <td>@item.Information</td>
-                                <td>$ @item.Price </td>
-                                <td>
+
+                                <td style="width: 8rem;" align="center">$ @item.Price.ToString("0.00") </td>
+                                <td align="center" style="width: 8rem;">
                                     <a class="text-success" asp-controller="Admin" asp-action="AddIngredient" asp-route-id="@item.Id">Add Ingredients</a><br />
                                     <a class="text-info bg-black" asp-controller="Admin" asp-action="EditDish" asp-route-id="@item.Id">Edit Dish</a><br />
                                     <a class="text-danger bg-black" asp-controller="Admin" asp-action="DeleteDish" asp-route-id="@item.Id">Delete Dish</a>
