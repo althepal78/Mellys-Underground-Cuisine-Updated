@@ -14,7 +14,7 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
 
         [Required]
         [StringLength(500)]
-        [MinLength(45)]
+        [MinLength(5)]
         public string Description { get; set; }
 
         public DishIngredient? dishIngredient { get; set; }
@@ -25,6 +25,8 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         public int Servings { get; set; }
 
         [Required]
+        [Column(TypeName = "smallmoney")]
+        [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
         public ICollection<DishIngredient>? DishIngredient { get; set; }

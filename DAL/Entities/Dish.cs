@@ -19,7 +19,7 @@ namespace DAL.Entities
         //Information about the dish to tell how 
         [Required]
         [StringLength(500)]
-        [MinLength(45)]
+        [MinLength(5)]
         public string Description { get; set; }
 
         //This collection of dish ingredients is so we can reference the ingredient knowing that it haves a 
