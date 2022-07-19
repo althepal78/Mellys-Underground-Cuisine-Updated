@@ -397,9 +397,14 @@ namespace Mellys_Underground_Cuisine.Controllers
         [HttpPost]
         public async Task<IActionResult> EditServings([FromBody] MenuVM vm)
         {
-            var dishServings = _db.MenuDishes
-                .Where(i => i.MenuId == vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
-                .FirstOrDefault();
+            if(!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Bad VM", "There is no information ");
+                return View(nameof(ViewMenus),vm);
+            }
+            var dishServings = await  _db.MenuDishes
+                .Where( i => i.MenuId ==  vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
+                .FirstOrDefaultAsync();
 
             if (dishServings is null)
             {
@@ -408,11 +413,8 @@ namespace Mellys_Underground_Cuisine.Controllers
 
             dishServings.Servings = vm.Servings;
 
-            Console.WriteLine("did we get here");
-            //I need to make a javascript call  to here so I can get what I want from this 
-
             _db.MenuDishes.Update(dishServings);
-            _db.SaveChanges();
+            await  _db.SaveChangesAsync();
             return RedirectToAction(nameof(ViewMenus));
         }
     }

@@ -11,6 +11,7 @@
     <div class="container-fluid mt-1 p-0">
         <div class="row justify-content-center m-0 p-0">
             <div class="col-8 col-lg-8">
+                <div asp-validation-summary="All "></div>
                 @if (@Model.Menu is not null)
                 {
                     @foreach (var item in @Model.Menu)
@@ -46,11 +47,11 @@
                                                     <span class="text-danger">Delete X</span>
                                                 </a>
                                                 <br />
-                                                <a href="#" class="change" id="@item.DateColumn">
+                                                <span   class="change" id="@item.DateColumn">
                                                     <input hidden id="@i.MenuId" />
                                                     <input hidden id="@i.DishId" />
-                                                    <span class="EditServings text-warning">Change Servings</span>
-                                                </a>
+                                                    <span style="text-decoration: underline;" class="EditServings text-warning">Change Servings</span>
+                                                </span>
                                             </td>
                                         </tr>
                                     }
@@ -93,14 +94,13 @@
             }
         }
         // the url for back end to get too
-        const url = "/Admin/EditServings";
-        console.log("Date: ", el.id, ", MenuID: ", children[0].id, ", DishId: ", children[0].id)
+        const url = "/Admin/EditServings";      
         // the data needed to pass
         const data = {
             DateColumn: el.id.toString(),
             //ID: children[0].id.toString(),
-            DishId: children[1].id.toString(),
-            Servings: serv.toString()
+            //DishId: children[1].id.toString(),
+            //Servings: serv.toString()
         }
 
         // the options for the fetch method we will be uing
