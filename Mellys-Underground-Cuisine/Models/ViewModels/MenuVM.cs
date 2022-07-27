@@ -12,5 +12,6 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
         public List<Dish>? dishes { get; set; }
         public ICollection<MenuDish>? MenuDish { get; set; }
         public List<Menu>? Menu { get; set; }
+       
     }
 }

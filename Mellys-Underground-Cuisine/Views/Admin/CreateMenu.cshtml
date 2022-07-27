@@ -1,29 +1,36 @@
 ﻿@model Mellys_Underground_Cuisine.Models.ViewModels.MenuVM
 
 <h1>Create Your Menu</h1>
-<h3>What day is this Menu being created for <input asp-for="DateColumn" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></h3>
+<h3>What day is this Menu being created for <input asp-for="DateColumn" type="date" onchange="changeDate(this)" value="@Model.DateColumn.ToString("yyyy-MM-dd")" /></h3>
 <h5 class="directions">
     Remember if you have not created the dish yet, it will not be in the database, so please create the dish first. Then you will
     be able to click on it. If you change the date in the middle of making your dish all checks will be cleared and you will
     start a new menu.
 </h5>
 <div class="d-flex m-1">
-    @if (Model is not null)    
+    @if (Model is not null)
     {
         if (Model.dishes is not null)
-        {    
+        {
             foreach (var item in @Model.dishes)
             {
                 <div class="card bg-black text-white m-1" style="max-width: 18rem;">
                     <div asp-validation-summary="All"></div>
                     <div class="card-header text-white">
-                        @item.Name
-                        <input type="checkbox" id="@item.Id" class="cb text-white" />
+                        <label>@item.Name</label>
+                        @{
+                            DAL.Entities.MenuDish gg = null;
+                            if(Model.MenuDish != null)
+                             {
+                                 gg = Model.MenuDish.FirstOrDefault(x=> x.DishId==item.Id);                                
+                            }
+                        }
+                        
+                        <input type='checkbox' @((gg is not null) ? "checked" : "") onclick="displayCheck(this)" value="@item.Id" class='cb text-white' />
+
                     </div>
                     <img class="card-img-top" src="@item.FilePath" alt="Card image cap">
-                    <div class="card-body">
-                        <p class="card-text">@item.Description </p>
-                    </div>
+
                 </div>
             }
         }
@@ -33,38 +40,39 @@
 
 <script>
     let servings = 0;
-    let checkboxElems = document.querySelectorAll("input[type='checkbox']");
-    const dateControl = document.querySelector('input[type="date"]');
+    let dateControl = document.querySelector("#DateColumn")
 
-    checkboxElems.forEach((el, i) => {
-        el.addEventListener("click", (e) => {
-            displayCheck(e, el.id)
-        })
-    })
-
-    async function displayCheck(e, id) {
-        if (e.target.checked) {
+    function changeDate(e) {
+        console.log("hey here changeDate");
+        window.location.href = '/Admin/CreateMenu?DateColumn=' + e.value;
+    }
+    async function displayCheck(e) {
+        if (e.checked) {
 
             let input = prompt("How many servings per dish do you required? Please put answer in whole numbers etg(45)");
             servings = parseInt(input);
+
             if (input === null) {
-                e.target.checked = false;
+                e.checked = false;
                 return;
             }
             while (isNaN(servings)) {
                 input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
                 servings = parseInt(input);
                 if (input === null) {
-                    e.target.checked = false;
+                    e.checked = false;
                     return;
                 }
-            }
-            const url = "/Admin/CreateMenu";
-            //console.log(dateControl.value)
+            } 
+
+        }
+         const url = "/Admin/CreateMenu";
+            
             const data = {
-                DishId: id.toString(),
+                DishId: e.value,
                 Servings: servings.toString(),
-                DateColumn: dateControl.value.toString()
+                DateColumn: dateControl.value.toString(),
+                IsChecked: e.checked
             }
             const options =
             {
@@ -74,10 +82,7 @@
             }
 
             const response = await fetch(url, options);
-            console.log(response.status);
-
-        }
-
+            console.log(response);
     }
 </script>
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Mellys_Underground_Cuisine.Controllers
 {
     [Authorize]
@@ -299,20 +300,32 @@ namespace Mellys_Underground_Cuisine.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateMenu()
+        public async Task<IActionResult> CreateMenu([FromQuery] DateTime? DateColumn)
         {
-
             MenuVM MenuDishList = new MenuVM();
+            if (DateColumn == null)
+            {
+                MenuDishList.DateColumn = DateTime.Now;
+            }
+            else
+            {
+                MenuDishList.DateColumn = DateColumn.Value;
+            }
+            var mExists = await _db.Menu.Include(m => m.MenuDish).Where(d => d.DateColumn.Date == MenuDishList.DateColumn.Date).FirstOrDefaultAsync();
 
-            MenuDishList.dishes = _db.Dishes.ToList();
+
+            MenuDishList.dishes = _db.Dishes.Include(m => m.MenuDish).ThenInclude(d => d.Menu).ToList();
+            if (mExists is not null)
+            {
+                MenuDishList.MenuDish = mExists.MenuDish;
+            }
+
             return View(MenuDishList);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateMenu([FromBody] MenuVM vm)
         {
-
-            Console.WriteLine(vm.DateColumn.GetType() + " the Type of vm.DateColumn and what the date looks like: " + vm.DateColumn);
             var dishExists = await _db.Dishes.Where(id => id.Id == vm.DishId).FirstOrDefaultAsync();
             if (dishExists is null)
             {
@@ -320,42 +333,38 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return View(vm);
             }
 
-            var mExists = await _db.Menu.Where(d => d.DateColumn == vm.DateColumn).FirstOrDefaultAsync();
-            Menu newMenu = new Menu();
+            var mExists = await _db.Menu.Include(dm => dm.MenuDish).Where(d => d.DateColumn == vm.DateColumn).FirstOrDefaultAsync();
+
 
             if (mExists is null)
             {
-                newMenu.DateColumn = vm.DateColumn;
-                newMenu.IsChecked = true;
+                if (vm.IsChecked)
+                {
 
-                await _db.Menu.AddAsync(newMenu);
-                await _db.SaveChangesAsync();
+                    Menu newMenu = new Menu();
+                    newMenu.DateColumn = vm.DateColumn;
+
+                    await _db.Menu.AddAsync(newMenu);
+                    await _db.SaveChangesAsync();
+                    newMenu.MenuDish = new List<MenuDish>();
+                    newMenu.MenuDish.Add(new MenuDish { DishId = vm.DishId, MenuId = newMenu.ID, Servings = vm.Servings });
+                    await _db.SaveChangesAsync();
+                }
             }
             else
             {
-                newMenu = mExists;
-                newMenu.IsChecked = true;
-                newMenu.DateColumn = vm.DateColumn;
+                if (vm.IsChecked)
+                {
+                    mExists.MenuDish.Add(new MenuDish { DishId = vm.DishId, MenuId = mExists.ID, Servings = vm.Servings });
+                }
+                else
+                {
+                    mExists.MenuDish.Remove(mExists.MenuDish.FirstOrDefault(x=> x.DishId.Equals(vm.DishId)));
+                }
+                
 
-                _db.Menu.Update(newMenu);
                 await _db.SaveChangesAsync();
             }
-
-            MenuDish md = new MenuDish
-            {
-                MenuId = newMenu.ID,
-                DishId = dishExists.Id,
-                Servings = vm.Servings,
-            };
-
-            await _db.MenuDishes.AddAsync(md);
-            await _db.SaveChangesAsync();
-
-
-            _db.Dishes.Update(dishExists);
-
-
-            await _db.SaveChangesAsync();
             return Ok();
         }
 
@@ -397,13 +406,13 @@ namespace Mellys_Underground_Cuisine.Controllers
         [HttpPost]
         public async Task<IActionResult> EditServings([FromBody] MenuVM vm)
         {
-            if(!ModelState.IsValid)
+            if (vm is null)
             {
                 ModelState.AddModelError("Bad VM", "There is no information ");
-                return View(nameof(ViewMenus),vm);
+                return BadRequest();
             }
-            var dishServings = await  _db.MenuDishes
-                .Where( i => i.MenuId ==  vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
+            var dishServings = await _db.MenuDishes
+                .Where(i => i.MenuId == vm.ID && i.DishId == vm.DishId && i.Menu.DateColumn == vm.DateColumn)
                 .FirstOrDefaultAsync();
 
             if (dishServings is null)
@@ -411,11 +420,18 @@ namespace Mellys_Underground_Cuisine.Controllers
                 return NotFound();
             }
 
-            dishServings.Servings = vm.Servings;
 
+            dishServings.Servings = vm.Servings;
             _db.MenuDishes.Update(dishServings);
-            await  _db.SaveChangesAsync();
-            return RedirectToAction(nameof(ViewMenus));
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteFromMenu([FromBody] MenuVM vm)
+        {
+            var deleteit = await _db.MenuDishes.Where(d => d.DishId == vm.DishId && d.MenuId == vm.ID).FirstOrDefaultAsync();
+            return Ok();
         }
     }
 

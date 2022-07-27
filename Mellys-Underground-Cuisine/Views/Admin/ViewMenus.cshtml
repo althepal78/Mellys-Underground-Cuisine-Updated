@@ -6,24 +6,22 @@
 }
 
 <h1 class="text-center">View The Menus</h1>
-@if (Model is not null)
-{
+@if (Model != null){
     <div class="container-fluid mt-1 p-0">
         <div class="row justify-content-center m-0 p-0">
             <div class="col-8 col-lg-8">
                 <div asp-validation-summary="All "></div>
-                @if (@Model.Menu is not null)
+                @if (@Model.Menu != null)
                 {
                     @foreach (var item in @Model.Menu)
                     {
-                        @if (item.MenuDish is not null)
+                        @if (item.MenuDish != null)
                         {
                             <table class="table bg-black">
                                 <thead class="">
                                     <tr>
                                         <th colspan="5"><h5>Menu for  @item.DateColumn.ToString("MMM dd yyyy") </h5></th>
                                     </tr>
-
                                     <tr>
                                         <th style="width: 40rem;">Dish Name</th>
                                         <th>Dish Price</th>
@@ -32,25 +30,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
                                     @foreach (var i in item.MenuDish)
                                     {
                                         <tr>
                                             <td align="left">@i.Dish.Name</td>
                                             <td align="center">$@i.Dish.Price.ToString("0.00")</td>
-                                            <td align="center">@i.Servings</td>
+                                            <td class="servings" align="center">@i.Servings</td>
                                             <td>
                                                 <a asp-action="DeleteDishInMenu"
-                               asp-route-dateColumn="@item.DateColumn"
-                               asp-route-did="@i.DishId"
-                               asp-route-mid="@i.MenuId">
+                                                   asp-route-dateColumn="@item.DateColumn"
+                                                   asp-route-did="@i.DishId"
+                                                   asp-route-mid="@i.MenuId">
                                                     <span class="text-danger">Delete X</span>
                                                 </a>
                                                 <br />
-                                                <span   class="change" id="@item.DateColumn">
+                                                <span class="change"  >
                                                     <input hidden id="@i.MenuId" />
                                                     <input hidden id="@i.DishId" />
-                                                    <span style="text-decoration: underline;" class="EditServings text-warning">Change Servings</span>
+                                                    <input type="date"  hidden value="@item.DateColumn.ToString("yyyy-MM-dd")" />
+                                                    <span style="text-decoration: underline blue; cursor: pointer;" 
+                                                    class="EditServings text-warning">Change Servings</span>
                                                 </span>
                                             </td>
                                         </tr>
@@ -58,7 +57,6 @@
                                 </tbody>
                             </table>
                         }
-
                     }
                 }
             </div>
@@ -89,29 +87,36 @@
             input = prompt("I need a whole number for the quantity such as 1 or 43, the amount of servings for the dish. Guess if you don't know");
             serv = parseInt(input);
             if (input === null) {
-
                 return;
             }
         }
         // the url for back end to get too
         const url = "/Admin/EditServings";      
         // the data needed to pass
-        const data = {
-            DateColumn: el.id.toString(),
-            //ID: children[0].id.toString(),
-            //DishId: children[1].id.toString(),
-            //Servings: serv.toString()
+        const data = {        
+            
+            ID: children[0].id.toString(),
+            DishId: children[1].id.toString(),
+            DateColumn: children[2].value.toString(),
+            Servings: serv.toString()
         }
 
         // the options for the fetch method we will be uing
         const options =
-        {
+        {            
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         }
 
         // fetch section
-        fetch(url, options);
+        fetch(url, options)
+            .then(res => { 
+                console.log(res)
+                if (res.status >= 200) {
+                    document.location.reload();
+                }
+                return res.json
+            }).then(data=> console.log(data));
     }
 </script>
