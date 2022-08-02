@@ -1,7 +1,45 @@
-﻿@{
+﻿@model Mellys_Underground_Cuisine.Models.ViewModels.MenuVM
+
+@{
     ViewData["Title"] = "Melly's Underground Cuisine";
 }
 <!-- Carousel wrapper -->
 <div class="theContainer">
-    coming soon
+    @if (Model != null)
+    {
+        @foreach (var item in @Model.dishes)
+        {
+            <section class="section">
+                <div class="menus">
+                    <div class="cus-menu-item">
+                        <div class="image-section">
+                            <div class="item-name">
+                                <p>@item.Name</p>
+                            </div>
+                            <img src="@item.FilePath" />
+                            <p> @item.Description </p>
+                            <h5>@item.Price.ToString("C2")</h5>
+                        </div>
+                        <div class="hover-item">
+                            <a>Add To cart</a>
+                            <div class="icons">
+                                <p>Something in here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        }
+
+    }
 </div>
+@section Styles {
+    <link href="~/css/customerMenu.css" rel="stylesheet" type="text/css" />
+}
+
+    @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+ }

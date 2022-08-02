@@ -33,5 +33,12 @@
     "minify": {
       "enabled": false
     }
+  },
+  {
+    "outputFile": "wwwroot/css/customerMenu.css",
+    "inputFile": "wwwroot/scss/customerMenu.scss",
+    "minify": {
+      "enabled": false
+    }
   }
 ]

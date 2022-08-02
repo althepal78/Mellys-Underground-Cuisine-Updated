@@ -1,4 +1,6 @@
-﻿using Mellys_Underground_Cuisine.Models;
+﻿using DAL.Context;
+using Mellys_Underground_Cuisine.Models;
+using Mellys_Underground_Cuisine.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,15 +9,24 @@ namespace Mellys_Underground_Cuisine.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, AppDbContext _db)
         {
             _logger = logger;
+            this._db = _db;
         }
+
 
         public IActionResult Index()
         {
-            return View();
+            MenuVM menuVM = new MenuVM();
+
+            var getMenu = _db.Dishes.ToList();
+
+            menuVM.dishes = getMenu;
+           
+            return View("Index",  menuVM);
         }
 
         public IActionResult Privacy()

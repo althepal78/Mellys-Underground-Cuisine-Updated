@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Cart\" />
     <Folder Include="wwwroot\images\foodimages\" />
   </ItemGroup>
 

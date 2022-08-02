@@ -1,0 +1,70 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+// variables
+$transition: all 0.4s ease-in-out;
+$thePink: #ff9ff6;
+
+body {
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    transition: $transition;
+}
+
+section {
+    width: 20rem;
+    margin: 2.5rem;
+
+    .menus {
+        .cus-menu-item {
+            position: relative;
+
+            .item-name {
+                p {
+                    background-color: black;
+                    color: $thePink;
+                }
+            }
+
+            img {
+                width: 20rem;
+                height: 15rem;
+            }
+
+            p {
+                word-wrap: break-word;
+            }
+
+            h5 {
+                color: #000565;
+            }
+        }
+
+        .hover-item {
+            width: 20rem;
+            height: 15rem;
+            background-color: #000;
+            color: $thePink;
+            position: absolute;
+            top: 2.5rem;
+            left: 0;
+            opacity: 0;
+            transform: scale(0);
+            transition: $transition;
+            display:flex;
+            flex-direction:column;
+            justify-content: center;
+            text-align:center;
+
+        }
+    }
+}
+
+.cus-menu-item:hover .hover-item {
+    opacity: 1;
+    transform: scale(1);
+    transition: $transition;
+}
