@@ -6,7 +6,6 @@ namespace DAL.Entities
 
     public class Dish
     {
-
         // obviously the key of the dish
         [Key]
         public Guid Id { get; set; }

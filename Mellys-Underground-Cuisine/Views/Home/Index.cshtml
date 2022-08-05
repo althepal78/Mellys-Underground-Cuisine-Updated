@@ -4,34 +4,37 @@
     ViewData["Title"] = "Melly's Underground Cuisine";
 }
 <!-- Carousel wrapper -->
-<div class="theContainer">
+<div class="theContainer d-flex">
     @if (Model != null)
     {
-        @foreach (var item in @Model.dishes)
+        @foreach (var dish in @Model.dishes)
         {
-            <section class="section">
-                <div class="menus">
-                    <div class="cus-menu-item">
-                        <div class="image-section">
-                            <div class="item-name">
-                                <p>@item.Name</p>
+            foreach (var menu in @Model.Menu)
+            {
+                if (menu.DateColumn.Date == DateTime.Now.Date)
+                {
+                    <section class="section ">
+                        <div class="menus ">
+                            <div class="cus-menu-item">
+                                <div class="image-section">
+                                    <div class="item-name">
+                                        <p>@dish.Name</p>
+                                    </div>
+                                    <img src="@dish.FilePath" />
+                                    <p> @dish.Description </p>
+                                    <h5>@dish.Price.ToString("C2")</h5>
+                                </div>
+                                <div class="hover-item">
+                                    <a asp-action="AddToCart" asp-controller="Cart" asp-route-dishid="@dish.Id" asp-route-menuid="@menu.ID">Add To cart</a>
+                                    <div class="icons">
+                                    </div>
+                                </div>
                             </div>
-                            <img src="@item.FilePath" />
-                            <p> @item.Description </p>
-                            <h5>@item.Price.ToString("C2")</h5>
                         </div>
-                        <div class="hover-item">
-                            <a>Add To cart</a>
-                            <div class="icons">
-                                <p>Something in here</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+                    </section>
+                }
+            }
         }
-
     }
 </div>
 @section Styles {

@@ -1,6 +1,8 @@
 ﻿<nav>
     <ul>
-        <li class="logo"><img src="~/images/melysSmallLogo.jpg"></li>
+        <li class="logo">
+            <a asp-action="Index" asp-controller="Home" onMouseOver="this.style.backgroundColor='#000'">
+            <img src="~/images/melysSmallLogo.jpg"></a></li>
         <li><a asp-action="Index" asp-controller="Admin"><i class="fa fa-home"></i>&nbsp;  Home</a></li>
         <li><a asp-action="AddDish" asp-controller="Admin"><i class="fa fa-book"></i>&nbsp;  Add Dish</a></li>
          <li><a asp-action="CreateMenu" asp-controller="Admin"><i class="fa fa-users"></i>&nbsp;  Create Menu</a></li>

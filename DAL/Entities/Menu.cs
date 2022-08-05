@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DAL.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Entities
 {
@@ -9,6 +10,7 @@ namespace DAL.Entities
 
         public bool IsChecked { get; set; } = false;
 
+        [PastDate]
         public DateTime DateColumn { get; set; }
 
         public ICollection<MenuDish>? MenuDish { get; set; }

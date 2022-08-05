@@ -1,4 +1,5 @@
 ﻿using DAL.Entities;
+using DAL.Validations;
 
 namespace Mellys_Underground_Cuisine.Models.ViewModels
 {
@@ -6,6 +7,8 @@ namespace Mellys_Underground_Cuisine.Models.ViewModels
     {
         public Guid ID { get; set; }
         public Guid DishId { get; set; }
+
+        [PastDate]
         public DateTime DateColumn { get; set; }
         public int Servings { get; set; }
         public bool IsChecked { get; set; } = false;       
