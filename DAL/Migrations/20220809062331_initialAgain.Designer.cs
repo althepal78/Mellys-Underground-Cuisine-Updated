@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220630221705_AddedManyToManyInDishEntity")]
-    partial class AddedManyToManyInDishEntity
+    [Migration("20220809062331_initialAgain")]
+    partial class initialAgain
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -102,17 +102,17 @@ namespace DAL.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("DishType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Information")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsDefaulting")
                         .HasColumnType("bit");
@@ -123,10 +123,7 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .HasColumnType("smallmoney");
 
                     b.HasKey("Id");
 
@@ -174,24 +171,33 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("DateColumn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("bit");
+
                     b.HasKey("ID");
 
                     b.ToTable("Menu");
                 });
 
-            modelBuilder.Entity("DishMenu", b =>
+            modelBuilder.Entity("DAL.Entities.MenuDish", b =>
                 {
-                    b.Property<Guid>("DailyMenuID")
+                    b.Property<Guid>("DishId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MenuDishId")
+                    b.Property<Guid>("MenuId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("DailyMenuID", "MenuDishId");
+                    b.Property<int>("Servings")
+                        .HasColumnType("int");
 
-                    b.HasIndex("MenuDishId");
+                    b.HasKey("DishId", "MenuId");
 
-                    b.ToTable("DishMenu");
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("MenuDishes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -353,19 +359,23 @@ namespace DAL.Migrations
                     b.Navigation("Ingredients");
                 });
 
-            modelBuilder.Entity("DishMenu", b =>
+            modelBuilder.Entity("DAL.Entities.MenuDish", b =>
                 {
-                    b.HasOne("DAL.Entities.Menu", null)
-                        .WithMany()
-                        .HasForeignKey("DailyMenuID")
+                    b.HasOne("DAL.Entities.Dish", "Dish")
+                        .WithMany("MenuDish")
+                        .HasForeignKey("DishId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Entities.Dish", null)
-                        .WithMany()
-                        .HasForeignKey("MenuDishId")
+                    b.HasOne("DAL.Entities.Menu", "Menu")
+                        .WithMany("MenuDish")
+                        .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dish");
+
+                    b.Navigation("Menu");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -427,11 +437,18 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.Dish", b =>
                 {
                     b.Navigation("DishIngredient");
+
+                    b.Navigation("MenuDish");
                 });
 
             modelBuilder.Entity("DAL.Entities.Ingredient", b =>
                 {
                     b.Navigation("DishIngredient");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Menu", b =>
+                {
+                    b.Navigation("MenuDish");
                 });
 #pragma warning restore 612, 618
         }

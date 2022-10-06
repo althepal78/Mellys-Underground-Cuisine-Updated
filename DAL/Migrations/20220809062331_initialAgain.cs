@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class AddedMenu : Migration
+    public partial class initialAgain : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -65,7 +65,9 @@ namespace DAL.Migrations
                 name: "Menu",
                 columns: table => new
                 {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsChecked = table.Column<bool>(type: "bit", nullable: false),
+                    DateColumn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -184,12 +186,10 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Information = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Price = table.Column<decimal>(type: "smallmoney", nullable: false),
                     DishType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDefaulting = table.Column<bool>(type: "bit", nullable: false),
-                    DailyMenuID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -201,11 +201,6 @@ namespace DAL.Migrations
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Dishes_Menu_DailyMenuID",
-                        column: x => x.DailyMenuID,
-                        principalTable: "Menu",
-                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -228,6 +223,31 @@ namespace DAL.Migrations
                         name: "FK__dishIngredients_Ingredients_IngredientsId",
                         column: x => x.IngredientsId,
                         principalTable: "Ingredients",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuDishes",
+                columns: table => new
+                {
+                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Servings = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuDishes", x => new { x.DishId, x.MenuId });
+                    table.ForeignKey(
+                        name: "FK_MenuDishes_Dishes_DishId",
+                        column: x => x.DishId,
+                        principalTable: "Dishes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MenuDishes_Menu_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menu",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -282,9 +302,9 @@ namespace DAL.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dishes_DailyMenuID",
-                table: "Dishes",
-                column: "DailyMenuID");
+                name: "IX_MenuDishes_MenuId",
+                table: "MenuDishes",
+                column: "MenuId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -308,7 +328,7 @@ namespace DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Dishes");
+                name: "MenuDishes");
 
             migrationBuilder.DropTable(
                 name: "Ingredients");
@@ -317,10 +337,13 @@ namespace DAL.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Dishes");
 
             migrationBuilder.DropTable(
                 name: "Menu");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }
